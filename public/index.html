@@ -3,542 +3,1341 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Piano Block Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"/>
+  <title>ElectroBlocks Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0f0f0f;
-      --surface: #1a1a1a;
-      --border: #2a2a2a;
-      --text: #f0f0f0;
-      --muted: #666;
-      --green: #22c55e;
-      --amber: #f59e0b;
-      --red: #ef4444;
-      --blue: #3b82f6;
+      --bg: #0b0f1a;
+      --surface: #131929;
+      --surface2: #1a2234;
+      --border: #1e2d44;
+      --border2: #243450;
+      --text: #e8eeff;
+      --muted: #4a5a7a;
+      --muted2: #6a7a9a;
+
+      --green: #22d67a;
+      --amber: #ffb830;
+      --red: #ff4f5e;
+      --blue: #4d8eff;
+      --purple: #9d6bff;
+      --cyan: #00d4ff;
+      --pink: #ff6bb5;
+
+      --radius: 18px;
+      --radius-sm: 12px;
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Nunito', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 2rem;
     }
 
-    h1 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #ffffff;
-      margin-bottom: 0.25rem;
-    }
-
-    .subtitle {
-      font-size: 0.85rem;
-      color: #666;
-      margin-bottom: 2rem;
-    }
-
-    /* ── Status ── */
-    .status-row {
+    /* ─── NAV ─── */
+    .nav {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 1.5rem;
+      padding: 14px 28px;
+      background: rgba(11,15,26,0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: 'Baloo 2', cursive;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      margin-right: auto;
+      letter-spacing: 0.5px;
+    }
+    .nav-logo span { color: var(--blue); }
+    .nav-logo em { color: var(--cyan); font-style: normal; }
+
+    .nav-tabs { display: flex; gap: 4px; }
+    .nav-tab {
+      padding: 8px 20px;
+      border-radius: 50px;
+      border: 1px solid transparent;
+      background: transparent;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-tab:hover { color: var(--text); background: var(--surface2); }
+    .nav-tab.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: transparent;
     }
 
-    .dot {
-      width: 10px; height: 10px;
+    .live-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-left: 20px;
+      padding: 6px 14px;
+      border-radius: 50px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted2);
+    }
+    .live-dot {
+      width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--red);
-      transition: background 0.3s;
+      transition: background 0.4s;
     }
-    .dot.online     { background: var(--green); }
-    .dot.connecting { background: var(--amber); }
-    .status-text { font-size: 0.85rem; color: #888; }
+    .live-dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); animation: livepulse 2s infinite; }
+    .live-dot.connecting { background: var(--amber); }
+    @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
+    /* ─── PAGES ─── */
+    .page { display: none; padding: 28px; max-width: 1100px; margin: 0 auto; }
+    .page.active { display: block; animation: fadeUp 0.3s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-
-    /* ── Cards grid ── */
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-      margin-bottom: 1.5rem;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-    }
-    .card-label {
-      font-size: 0.7rem; color: #666;
-      text-transform: uppercase; letter-spacing: 0.05em;
-      margin-bottom: 8px;
-    }
-    .card-value {
-      font-size: 1.9rem; font-weight: 700;
-      font-family: 'Courier Prime', monospace;
-      color: #fff;
-    }
-    .card-sub { font-size: 0.7rem; color: #555; margin-top: 6px; }
-
-    /* ── Note badge ── */
-    .note-badge {
-      display: inline-block;
-      padding: 6px 20px;
-      border-radius: 8px;
-      font-size: 2rem; font-weight: 700;
-      font-family: 'Courier Prime', monospace;
-      transition: all 0.3s;
-    }
-    .note-DO   { background: #1e3a5f; color: #60a5fa; }
-    .note-RE   { background: #14532d; color: #4ade80; }
-    .note-none { background: #1a1a1a; color: #444; }
-
-    /* ── History ── */
-    .history-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 1.5rem;
-    }
-    .history-title {
-      font-size: 0.7rem; color: #666;
-      text-transform: uppercase; letter-spacing: 0.05em;
-      margin-bottom: 10px;
-    }
-    .history-list {
-      display: flex; flex-wrap: wrap; gap: 6px;
-      min-height: 36px; align-items: center;
-    }
-    .pill {
-      font-size: 0.75rem; font-family: 'Courier Prime', monospace;
-      padding: 4px 12px; border-radius: 99px; font-weight: 700;
-    }
-    .pill-DO { background: #1e3a5f; color: #60a5fa; }
-    .pill-RE { background: #14532d; color: #4ade80; }
-    .waiting { font-size: 0.85rem; color: #555; }
-
-
-
-    /* ── Flash animation ── */
-    @keyframes flash {
-      0%   { opacity: 1; }
-      50%  { opacity: 0.4; }
-      100% { opacity: 1; }
-    }
-    .flash { animation: flash 0.4s ease; }
-
-    /* ════════════════════════════════
-       BATTERY WIDGET
-    ════════════════════════════════ */
-    .battery-section {
-      margin-bottom: 1.5rem;
-    }
-
-    .battery-section-title {
-      font-size: 0.7rem; color: #666;
-      text-transform: uppercase; letter-spacing: 0.05em;
-      margin-bottom: 10px;
-    }
-
-    .battery-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    /* The big battery icon */
-    .battery-icon-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .battery-body {
-      width: 110px;
-      height: 56px;
-      border: 3px solid #444;
-      border-radius: 10px;
-      position: relative;
-      overflow: hidden;
-      background: #111;
-    }
-
-    /* Battery nub */
-    .battery-body::after {
-      content: '';
-      position: absolute;
-      right: -10px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 8px;
-      height: 22px;
-      background: #444;
-      border-radius: 0 4px 4px 0;
-    }
-
-    .battery-fill {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      border-radius: 7px;
-      transition: width 1s ease, background 1s ease;
-      background: var(--green);
-    }
-
-    /* Shine effect on fill */
-    .battery-fill::after {
-      content: '';
-      position: absolute;
-      top: 4px; left: 6px; right: 6px;
-      height: 8px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 4px;
-    }
-
-    .battery-pct-inside {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-      font-size: 1rem;
-      font-weight: 900;
-      font-family: 'Nunito', sans-serif;
-      color: #fff;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-      z-index: 2;
-      line-height: 56px;
-    }
-
-    /* Battery emoji face */
-    .battery-face {
-      font-size: 2.2rem;
-      margin-top: 8px;
-      text-align: center;
-      transition: all 0.5s;
-      line-height: 1;
-    }
-
-    /* Right side info */
-    .battery-info {
-      flex: 1;
-      min-width: 160px;
-    }
-
-    .battery-big-pct {
-      font-size: 3.5rem;
-      font-weight: 900;
-      font-family: 'Nunito', sans-serif;
-      line-height: 1;
-      transition: color 0.5s;
-    }
-
-    .battery-status-label {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-top: 4px;
-      transition: color 0.5s;
-    }
-
-    .battery-stats {
-      display: flex;
-      gap: 1.5rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .bstat {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .bstat-label {
-      font-size: 0.65rem;
-      color: #555;
+    /* ─── SECTION HEADER ─── */
+    .sec-head {
+      font-size: 10px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .bstat-value {
-      font-size: 1rem;
-      font-weight: 700;
-      font-family: 'Courier Prime', monospace;
-      color: #ccc;
-    }
-
-    /* Kids-friendly tip bar */
-    .battery-tip {
-      margin-top: 1rem;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.5s;
+    }
+    .sec-head::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* ─── BATTERY ─── */
+    .battery-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      transition: border-color 0.5s, box-shadow 0.5s;
+      position: relative;
+      overflow: hidden;
+    }
+    .battery-card::before {
+      content:'';
+      position:absolute;
+      inset:0;
+      background: radial-gradient(ellipse 60% 60% at 10% 50%, rgba(77,142,255,0.04) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .battery-card.level-low { border-color: rgba(255,79,94,0.4); box-shadow: 0 0 24px rgba(255,79,94,0.08); }
+    .battery-card.level-mid { border-color: rgba(255,184,48,0.3); }
+    .battery-card.level-high { border-color: rgba(34,214,122,0.25); }
+
+    .batt-icon-col { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink:0; }
+
+    .batt-body {
+      width: 100px; height: 50px;
+      border: 2.5px solid #2a3a55;
+      border-radius: 9px;
+      background: #0b0f1a;
+      position: relative;
+      overflow: hidden;
+    }
+    .batt-body::after {
+      content:'';
+      position:absolute;
+      right:-9px; top:50%; transform:translateY(-50%);
+      width:7px; height:20px;
+      background:#2a3a55;
+      border-radius:0 4px 4px 0;
+    }
+    .batt-fill {
+      position:absolute; left:0;top:0;bottom:0;
+      border-radius:6px;
+      transition:width 1s ease, background 0.8s;
+    }
+    .batt-fill::after {
+      content:'';
+      position:absolute;
+      top:5px;left:6px;right:6px;
+      height:6px;
+      background:rgba(255,255,255,0.12);
+      border-radius:3px;
+    }
+    .batt-pct-overlay {
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:13px; font-weight:900;
+      color:#fff;
+      text-shadow:0 1px 4px rgba(0,0,0,0.7);
+      z-index:2;
+    }
+    .batt-face { font-size:2rem; line-height:1; }
+
+    .batt-info { flex:1; min-width:180px; }
+    .batt-big { font-family:'Baloo 2',cursive; font-size:3.8rem; font-weight:800; line-height:1; transition:color 0.5s; }
+    .batt-status { font-size:1rem; font-weight:700; margin-top:2px; transition:color 0.5s; }
+    .batt-stats { display:flex; gap:24px; margin-top:12px; flex-wrap:wrap; }
+    .bst { display:flex; flex-direction:column; gap:2px; }
+    .bst-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+    .bst-val { font-size:1rem; font-weight:700; font-family:'Courier Prime',monospace; color:#aabbd4; }
+
+    .batt-tip {
+      margin-top:12px; padding:9px 14px;
+      border-radius:10px;
+      font-size:0.83rem; font-weight:700;
+      display:flex; align-items:center; gap:8px;
+      transition:all 0.5s;
+    }
+    @keyframes shakered { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+    .batt-critical { animation:shakered 0.5s ease 0s 3; }
+
+    /* ─── UPTIME CARD ─── */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+    }
+    .stat-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; }
+    .stat-val { font-family:'Baloo 2',cursive; font-size:2rem; font-weight:700; color:var(--text); }
+    .stat-sub { font-size:11px; color:var(--muted); margin-top:4px; }
+
+    /* ─── SESSION GRAPH ─── */
+    .graph-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+    .graph-title { font-family:'Baloo 2',cursive; font-size:16px; font-weight:700; color:var(--cyan); margin-bottom:16px; }
+    .graph-bars { display:flex; align-items:flex-end; gap:8px; height:120px; }
+    .gbar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
+    .gbar { width:100%; border-radius:6px 6px 0 0; min-height:3px; position:relative; transition:height 0.8s cubic-bezier(.34,1.56,.64,1); }
+    .gbar-val { position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:9px; font-weight:700; color:var(--muted2); white-space:nowrap; }
+    .gbar-lbl { font-size:10px; color:var(--muted); font-weight:700; }
+
+    /* ─── BLOCK VISUALIZER ─── */
+    .blocks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .block-vis {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: border-color 0.4s;
+    }
+    .block-vis.connected { border-color: rgba(77,142,255,0.4); }
+    .block-vis.disconnected { border-color: var(--border); opacity: 0.7; }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .block-name { font-family:'Baloo 2',cursive; font-size:16px; font-weight:700; }
+    .conn-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .conn-badge.on { background:rgba(34,214,122,0.12); color:var(--green); }
+    .conn-badge.off { background:rgba(74,90,122,0.3); color:var(--muted2); }
+    .conn-badge-dot { width:6px; height:6px; border-radius:50%; }
+    .conn-badge.on .conn-badge-dot { background:var(--green); }
+    .conn-badge.off .conn-badge-dot { background:var(--muted); }
+
+    /* Piano block buttons */
+    .piano-keys-row { display: flex; gap: 10px; justify-content: center; }
+    .piano-key-vis {
+      flex: 1;
+      aspect-ratio: 3/4;
+      max-width: 70px;
+      border-radius: 10px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 10px;
+      gap: 4px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .piano-key-vis.pressed {
+      background: rgba(77,142,255,0.15);
+      border-color: var(--blue);
+      box-shadow: 0 0 16px rgba(77,142,255,0.2);
+    }
+    .piano-key-vis.pressed::after {
+      content:'';
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg,rgba(77,142,255,0.08)0%,transparent 60%);
+    }
+    .key-note-lbl { font-size:13px; font-weight:900; color:var(--muted2); transition:color 0.3s; }
+    .piano-key-vis.pressed .key-note-lbl { color:#fff; }
+    .key-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--border2);
+      transition: all 0.3s;
+    }
+    .piano-key-vis.pressed .key-dot { background: var(--blue); box-shadow: 0 0 8px var(--blue); }
+    .key-ripple {
+      position:absolute;
+      width:60px; height:60px;
+      border-radius:50%;
+      background:rgba(77,142,255,0.15);
+      transform:scale(0);
+      pointer-events:none;
+      animation:ripple 0.5s ease-out forwards;
+    }
+    @keyframes ripple { to{transform:scale(3);opacity:0;} }
+
+    /* Last played note indicator */
+    .last-note-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 12px;
+      background: var(--surface2);
+      border-radius: 10px;
+    }
+    .last-note-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; flex-shrink:0; }
+    .last-note-pills { display:flex; flex-wrap:wrap; gap:5px; }
+    .note-pill {
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-size: 12px; font-weight: 800;
+      font-family: 'Courier Prime', monospace;
+      background: rgba(77,142,255,0.15);
+      color: var(--blue);
+      animation: popIn 0.3s ease;
+    }
+    @keyframes popIn { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+
+    /* ─── COLOUR BLOCK ─── */
+    .colour-block-body { display: flex; align-items: center; gap: 20px; }
+    .rgb-sliders-vis { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .rgb-row-vis { display: flex; align-items: center; gap: 10px; }
+    .rgb-row-vis span:first-child { font-size:11px; font-weight:800; width:16px; text-align:center; }
+    .rgb-row-vis.R span:first-child { color:var(--red); }
+    .rgb-row-vis.G span:first-child { color:var(--green); }
+    .rgb-row-vis.B span:first-child { color:var(--blue); }
+    .rgb-track { flex:1; height:6px; background:var(--border2); border-radius:6px; overflow:hidden; }
+    .rgb-track-fill { height:100%; border-radius:6px; transition:width 0.5s ease; }
+    .rgb-row-vis.R .rgb-track-fill { background:var(--red); }
+    .rgb-row-vis.G .rgb-track-fill { background:var(--green); }
+    .rgb-row-vis.B .rgb-track-fill { background:var(--blue); }
+    .rgb-num { font-size:11px; font-weight:700; font-family:'Courier Prime',monospace; color:var(--muted2); width:28px; text-align:right; }
+
+    .colour-swatch-big {
+      width: 80px; height: 80px;
+      border-radius: 16px;
+      border: 2px solid var(--border2);
+      transition: background 0.5s;
+      flex-shrink: 0;
+    }
+    .colour-hex {
+      font-size: 11px;
+      font-family: 'Courier Prime', monospace;
+      color: var(--muted2);
+      text-align: center;
+      margin-top: 5px;
     }
 
-    /* Charging animation */
-    @keyframes pulse-green {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
-      50%       { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+    /* ─── PIANO PAGE ─── */
+    .song-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
     }
-    @keyframes pulse-red {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
-      50%       { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    .song-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 14px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
     }
-    @keyframes bounce-face {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-4px); }
-    }
+    .song-card:hover { border-color: var(--blue); transform: translateY(-3px); }
+    .song-card.active { border-color: var(--cyan); background: rgba(0,212,255,0.05); }
+    .song-emoji { font-size: 34px; margin-bottom: 8px; display: block; }
+    .song-name { font-family:'Baloo 2',cursive; font-size:15px; font-weight:700; color:var(--text); }
+    .song-diff { display:flex; gap:3px; justify-content:center; margin-top:6px; }
+    .diff-star { width:8px;height:8px;border-radius:50%;background:var(--border2); }
+    .diff-star.on { background:var(--amber); }
 
-    .battery-card.level-high  { border-color: #1a3a1a; }
-    .battery-card.level-mid   { border-color: #3a2e00; }
-    .battery-card.level-low   { border-color: #3a1010; animation: pulse-red 2s infinite; }
+    .piano-stage {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .stage-title { font-family:'Baloo 2',cursive; font-size:18px; font-weight:700; color:var(--purple); margin-bottom:4px; }
+    .stage-sub { font-size:12px; color:var(--muted); margin-bottom:20px; }
 
-    .face-happy  { animation: bounce-face 1.5s ease-in-out infinite; }
+    .all-blocks-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .phys-block {
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
+      border-radius: 14px;
+      padding: 14px 12px;
+    }
+    .phys-block-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+    .phys-keys { display:flex; gap:8px; }
+    .phys-key {
+      width:52px; height:64px;
+      border-radius: 10px;
+      background: var(--bg);
+      border: 1.5px solid var(--border2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 8px;
+      gap: 5px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .phys-key.lit {
+      background: rgba(77,142,255,0.15);
+      border-color: var(--blue);
+      box-shadow: 0 0 20px rgba(77,142,255,0.25);
+    }
+    .phys-key.lit .phys-note { color: #fff; }
+    .phys-key.pressed-grey {
+      background: rgba(255,255,255,0.03);
+      border-color: #2a3550;
+    }
+    .phys-key.pressed-grey .phys-note { color: var(--muted); }
+    .phys-note { font-size:12px; font-weight:900; color:var(--muted2); transition:color 0.25s; }
+    .phys-dot { width:9px;height:9px;border-radius:50%;background:var(--border2); transition:all 0.25s; }
+    .phys-key.lit .phys-dot { background:var(--blue); box-shadow:0 0 6px var(--blue); }
+    .phys-key.pressed-grey .phys-dot { background:#2a3550; }
+
+    .play-progress {
+      margin-top: 18px;
+      background: var(--surface2);
+      border-radius: 12px;
+      padding: 12px 16px;
+    }
+    .pp-row { display:flex; align-items:center; gap:10px; }
+    .pp-lbl { font-size:12px; color:var(--muted); font-weight:700; flex-shrink:0; }
+    .pp-track { flex:1; height:8px; background:var(--border2); border-radius:8px; overflow:hidden; }
+    .pp-fill { height:100%; background:linear-gradient(90deg,var(--purple),var(--blue)); border-radius:8px; transition:width 0.5s ease; }
+    .pp-pct { font-size:12px; font-weight:800; color:var(--text); width:36px; text-align:right; }
+    .pp-note-hint { margin-top:8px; font-size:12px; color:var(--muted); }
+    .pp-note-hint span { color:var(--cyan); font-weight:800; font-family:'Courier Prime',monospace; }
+
+    .song-btns { display:flex; gap:10px; margin-top:14px; }
+    .sb {
+      padding:10px 24px;
+      border-radius:50px;
+      border: none;
+      font-family:'Baloo 2',cursive;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      transition:all 0.2s;
+    }
+    .sb:hover { transform:scale(1.04); }
+    .sb:active { transform:scale(0.97); }
+    .sb-start { background:var(--green); color:#000; }
+    .sb-reset { background:var(--red); color:#fff; }
+    .sb:disabled { opacity:0.4; cursor:default; transform:none; }
+
+    /* ─── COLOUR PAGE ─── */
+    .colour-controls-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+    .cc-title { font-family:'Baloo 2',cursive; font-size:18px; font-weight:700; color:var(--purple); margin-bottom:16px; }
+    .cc-rgb-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .cc-sliders { flex:1; min-width:180px; display:flex; flex-direction:column; gap:12px; }
+    .cc-slider-row { display:flex; align-items:center; gap:10px; }
+    .cc-slider-row label { font-size:13px; font-weight:800; width:20px; }
+    .cc-slider-row.R label { color:var(--red); }
+    .cc-slider-row.G label { color:var(--green); }
+    .cc-slider-row.B label { color:var(--blue); }
+    .cc-slider-row input[type=range] { flex:1; cursor:pointer; }
+    .cc-val { font-size:12px; font-weight:700; font-family:'Courier Prime',monospace; color:var(--muted2); width:30px; text-align:right; }
+    .cc-preview-col { display:flex; flex-direction:column; align-items:center; gap:6px; }
+    .cc-swatch { width:72px; height:72px; border-radius:16px; border:2px solid var(--border2); transition:background 0.3s; }
+    .cc-hex { font-size:11px; font-family:'Courier Prime',monospace; color:var(--muted2); }
+    .cc-history { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; align-items:center; }
+    .cc-hist-dot { width:22px; height:22px; border-radius:50%; border:2px solid rgba(255,255,255,0.1); cursor:pointer; transition:transform 0.15s; }
+    .cc-hist-dot:hover { transform:scale(1.2); }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+    }
+    .img-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .img-card:hover { border-color: var(--purple); transform: translateY(-3px); }
+    .img-card.selected { border-color: var(--cyan); }
+    .img-canvas-wrap { background: #fff; padding: 12px; }
+    .img-canvas-wrap svg { width:100%; display:block; }
+    .img-footer { padding: 10px 14px; display:flex; align-items:center; justify-content:space-between; }
+    .img-name { font-family:'Baloo 2',cursive; font-size:14px; font-weight:700; }
+    .apply-btn {
+      padding: 5px 14px;
+      border-radius: 50px;
+      border: none;
+      background: var(--purple);
+      color: #fff;
+      font-family:'Nunito',sans-serif;
+      font-size:12px; font-weight:800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .apply-btn:hover { transform:scale(1.05); }
+    .section-tags { padding:0 14px 12px; display:flex; gap:5px; flex-wrap:wrap; }
+    .sec-tag {
+      font-size:10px; font-weight:800;
+      padding:3px 9px; border-radius:50px;
+      cursor: pointer;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      transition: all 0.15s;
+    }
+    .sec-tag:hover { transform:scale(1.05); }
+
+    /* ─── MISC ─── */
+    .empty-note { font-size:12px; color:var(--muted); }
+    @keyframes bounceface { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+    .face-happy { animation:bounceface 1.8s ease-in-out infinite; }
   </style>
 </head>
 <body>
 
-  <h1>🎹 Piano Block Dashboard</h1>
-  <p class="subtitle">Live data · ElectroBlocks Firebase</p>
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <div class="nav-logo">Electro<span>Blocks</span> <em>Studio</em></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="goPage('home',this)">🏠 Home</button>
+    <button class="nav-tab" onclick="goPage('piano',this)">🎹 Piano</button>
+    <button class="nav-tab" onclick="goPage('colour',this)">🎨 Colour</button>
+  </div>
+  <div class="live-pill">
+    <div class="live-dot" id="live-dot"></div>
+    <span id="live-text">Connecting…</span>
+  </div>
+</nav>
 
+<!-- ═══════════════ HOME PAGE ═══════════════ -->
+<div id="page-home" class="page active">
 
-
-  <!-- Status -->
-  <div class="status-row">
-    <div class="dot" id="status-dot"></div>
-    <span class="status-text" id="status-text">Not connected</span>
+  <!-- Battery -->
+  <div class="sec-head">⚡ Battery Monitor</div>
+  <div class="battery-card" id="battery-card">
+    <div class="batt-icon-col">
+      <div class="batt-body">
+        <div class="batt-fill" id="batt-fill" style="width:0%"></div>
+        <div class="batt-pct-overlay" id="batt-overlay">--%</div>
+      </div>
+      <div class="batt-face" id="batt-face">😊</div>
+    </div>
+    <div class="batt-info">
+      <div class="batt-big" id="batt-big" style="color:var(--green)">--%</div>
+      <div class="batt-status" id="batt-status" style="color:var(--green)">Loading…</div>
+      <div class="batt-stats">
+        <div class="bst"><span class="bst-lbl">Current</span><span class="bst-val" id="bst-current">-- mA</span></div>
+        <div class="bst"><span class="bst-lbl">Used</span><span class="bst-val" id="bst-used">-- mAh</span></div>
+        <div class="bst"><span class="bst-lbl">Capacity</span><span class="bst-val">1200 mAh</span></div>
+      </div>
+      <div class="batt-tip" id="batt-tip">
+        <span id="batt-tip-icon">⏳</span>
+        <span id="batt-tip-text">Waiting for sensor…</span>
+      </div>
+    </div>
   </div>
 
-  <!-- ═══ BATTERY WIDGET ═══ -->
-  <div class="battery-section">
-    <div class="battery-section-title">⚡ Battery Monitor</div>
-    <div class="battery-card" id="battery-card">
+  <!-- Uptime -->
+  <div class="sec-head" style="margin-top:8px;">📊 System</div>
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-lbl">⏱ Uptime</div>
+      <div class="stat-val" id="uptime-val" style="font-size:1.5rem;">--:--:--</div>
+      <div class="stat-sub">since ESP32 powered on</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-lbl">🔌 Blocks Online</div>
+      <div class="stat-val" id="blocks-online-val">0 / 3</div>
+      <div class="stat-sub">piano + colour blocks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-lbl">🎵 Last Note</div>
+      <div class="stat-val" id="home-last-note" style="font-family:'Courier Prime',monospace; font-size:1.6rem; color:var(--blue);">--</div>
+      <div class="stat-sub" id="home-last-time">--</div>
+    </div>
+  </div>
 
-      <div class="battery-icon-wrap">
-        <div>
-          <div class="battery-body" id="battery-body">
-            <div class="battery-fill" id="battery-fill" style="width:100%"></div>
-            <div class="battery-pct-inside" id="battery-pct-inside">--%</div>
+  <!-- Session graph -->
+  <div class="graph-card">
+    <div class="graph-title">📅 Session History</div>
+    <div class="graph-bars" id="graph-bars"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:6px;">
+      <div style="font-size:10px;color:var(--muted);">Minutes of activity per day</div>
+      <div style="display:flex;gap:12px;">
+        <span style="font-size:10px;color:var(--muted);"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--blue);margin-right:4px;vertical-align:middle;"></span>Notes</span>
+        <span style="font-size:10px;color:var(--muted);"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--purple);margin-right:4px;vertical-align:middle;"></span>Colour</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Block visualizers -->
+  <div class="sec-head">🔌 Block Status</div>
+  <div class="blocks-grid">
+
+    <!-- Piano B1 -->
+    <div class="block-vis disconnected" id="vis-b1">
+      <div class="block-header">
+        <div class="block-name" style="color:var(--blue)">🎹 Piano Block 1</div>
+        <div class="conn-badge off" id="badge-b1"><div class="conn-badge-dot"></div><span>Disconnected</span></div>
+      </div>
+      <div class="piano-keys-row">
+        <div class="piano-key-vis" id="pvk-DO"><div class="key-dot"></div><span class="key-note-lbl">DO</span></div>
+        <div class="piano-key-vis" id="pvk-RE"><div class="key-dot"></div><span class="key-note-lbl">RE</span></div>
+        <div class="piano-key-vis" id="pvk-MI"><div class="key-dot"></div><span class="key-note-lbl">MI</span></div>
+      </div>
+      <div class="last-note-row">
+        <span class="last-note-lbl">Recent:</span>
+        <div class="last-note-pills" id="history-b1"><span class="empty-note">—</span></div>
+      </div>
+    </div>
+
+    <!-- Piano B2 -->
+    <div class="block-vis disconnected" id="vis-b2">
+      <div class="block-header">
+        <div class="block-name" style="color:var(--cyan)">🎹 Piano Block 2</div>
+        <div class="conn-badge off" id="badge-b2"><div class="conn-badge-dot"></div><span>Disconnected</span></div>
+      </div>
+      <div class="piano-keys-row">
+        <div class="piano-key-vis" id="pvk-FA"><div class="key-dot"></div><span class="key-note-lbl">FA</span></div>
+        <div class="piano-key-vis" id="pvk-SOL"><div class="key-dot"></div><span class="key-note-lbl">SOL</span></div>
+        <div class="piano-key-vis" id="pvk-LA"><div class="key-dot"></div><span class="key-note-lbl">LA</span></div>
+      </div>
+      <div class="last-note-row">
+        <span class="last-note-lbl">Recent:</span>
+        <div class="last-note-pills" id="history-b2"><span class="empty-note">—</span></div>
+      </div>
+    </div>
+
+    <!-- Colour B3 -->
+    <div class="block-vis disconnected" id="vis-b3">
+      <div class="block-header">
+        <div class="block-name" style="color:var(--purple)">🎨 Colour Block 3</div>
+        <div class="conn-badge off" id="badge-b3"><div class="conn-badge-dot"></div><span>Disconnected</span></div>
+      </div>
+      <div class="colour-block-body">
+        <div class="rgb-sliders-vis">
+          <div class="rgb-row-vis R">
+            <span>R</span>
+            <div class="rgb-track"><div class="rgb-track-fill" id="rgb-r-bar" style="width:0%"></div></div>
+            <span class="rgb-num" id="rgb-r-num">0</span>
           </div>
-          <div class="battery-face" id="battery-face">😊</div>
+          <div class="rgb-row-vis G">
+            <span>G</span>
+            <div class="rgb-track"><div class="rgb-track-fill" id="rgb-g-bar" style="width:0%"></div></div>
+            <span class="rgb-num" id="rgb-g-num">0</span>
+          </div>
+          <div class="rgb-row-vis B">
+            <span>B</span>
+            <div class="rgb-track"><div class="rgb-track-fill" id="rgb-b-bar" style="width:0%"></div></div>
+            <span class="rgb-num" id="rgb-b-num">0</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+          <div class="colour-swatch-big" id="home-swatch" style="background:rgb(0,0,0)"></div>
+          <div class="colour-hex" id="home-hex">#000000</div>
         </div>
       </div>
+    </div>
 
-      <div class="battery-info">
-        <div class="battery-big-pct" id="battery-big-pct" style="color:#22c55e">--%</div>
-        <div class="battery-status-label" id="battery-status-label" style="color:#22c55e">Loading...</div>
+  </div>
+</div>
 
-        <div class="battery-stats">
-          <div class="bstat">
-            <span class="bstat-label">Current</span>
-            <span class="bstat-value" id="bstat-current">-- mA</span>
-          </div>
-          <div class="bstat">
-            <span class="bstat-label">Used</span>
-            <span class="bstat-value" id="bstat-used">-- mAh</span>
-          </div>
-          <div class="bstat">
-            <span class="bstat-label">Capacity</span>
-            <span class="bstat-value">1200 mAh</span>
-          </div>
+<!-- ═══════════════ PIANO PAGE ═══════════════ -->
+<div id="page-piano" class="page">
+  <div class="sec-head">🎵 Choose a Song</div>
+  <div class="song-grid" id="song-grid"></div>
+
+  <div class="piano-stage">
+    <div class="stage-title">🎹 Piano Blocks</div>
+    <div class="stage-sub">Watch the buttons light up as you physically press them on your ElectroBlocks! Play through the song step by step.</div>
+
+    <div class="all-blocks-row" id="all-blocks-row"></div>
+
+    <div class="play-progress" id="play-progress">
+      <div class="pp-row">
+        <span class="pp-lbl">Progress</span>
+        <div class="pp-track"><div class="pp-fill" id="pp-fill" style="width:0%"></div></div>
+        <span class="pp-pct" id="pp-pct">0%</span>
+      </div>
+      <div class="pp-note-hint">Next note to press: <span id="pp-next">—</span></div>
+    </div>
+
+    <div class="song-btns">
+      <button class="sb sb-start" id="start-btn" onclick="startSong()">▶ Start</button>
+      <button class="sb sb-reset" id="reset-btn" onclick="resetSong()" style="display:none">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="sec-head" style="margin-top:4px;">🕒 Note History</div>
+  <div class="graph-card" style="padding:16px 20px;">
+    <div style="display:flex;flex-wrap:wrap;gap:6px;min-height:36px;align-items:center;" id="piano-note-history">
+      <span class="empty-note">No notes yet this session…</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ COLOUR PAGE ═══════════════ -->
+<div id="page-colour" class="page">
+  <div class="sec-head">🎨 RGB Colour Block</div>
+  <div class="colour-controls-card">
+    <div class="cc-title">Live RGB Output from Block 3</div>
+    <div class="cc-rgb-row">
+      <div class="cc-sliders">
+        <div class="cc-slider-row R">
+          <label>R</label>
+          <input type="range" min="0" max="255" value="255" id="cc-r" oninput="onCCSlide()">
+          <span class="cc-val" id="cc-rv">255</span>
         </div>
-
-        <div class="battery-tip" id="battery-tip">
-          <span id="battery-tip-icon">⏳</span>
-          <span id="battery-tip-text">Waiting for data...</span>
+        <div class="cc-slider-row G">
+          <label>G</label>
+          <input type="range" min="0" max="255" value="100" id="cc-g" oninput="onCCSlide()">
+          <span class="cc-val" id="cc-gv">100</span>
+        </div>
+        <div class="cc-slider-row B">
+          <label>B</label>
+          <input type="range" min="0" max="255" value="200" id="cc-b" oninput="onCCSlide()">
+          <span class="cc-val" id="cc-bv">200</span>
         </div>
       </div>
-
+      <div class="cc-preview-col">
+        <div class="cc-swatch" id="cc-swatch" style="background:rgb(255,100,200)"></div>
+        <div class="cc-hex" id="cc-hex">#FF64C8</div>
+      </div>
+    </div>
+    <div class="cc-history">
+      <span style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-right:4px;">History</span>
+      <div id="cc-history-dots"></div>
     </div>
   </div>
 
-  <!-- Metric cards -->
-  <div class="cards">
-    <div class="card">
-      <div class="card-label">Uptime</div>
-      <div class="card-value" id="uptime-val">--:--:--</div>
-      <div class="card-sub">since ESP32 powered on</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Last note played</div>
-      <div id="note-badge" class="note-badge note-none">--</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Total presses</div>
-      <div class="card-value" id="press-count">0</div>
-      <div class="card-sub">this session</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Last pressed</div>
-      <div class="card-value" style="font-size:1.1rem;" id="last-time">--</div>
-      <div class="card-sub">local time</div>
-    </div>
-  </div>
+  <div class="sec-head">🖼 Colour an Image</div>
+  <div class="images-grid" id="images-grid"></div>
+</div>
 
-  <!-- Note history -->
-  <div class="history-box">
-    <div class="history-title">Note history (last 20)</div>
-    <div class="history-list" id="history-list">
-      <span class="waiting">waiting for notes...</span>
-    </div>
-  </div>
+<script>
+/* ═══════════════════════════════════════════
+   FIREBASE CONFIG
+═══════════════════════════════════════════ */
+const DB = 'https://electroblocks-87beb-default-rtdb.asia-southeast1.firebasedatabase.app';
 
-  <script>
-    const dbUrl  = 'https://electroblocks-87beb-default-rtdb.asia-southeast1.firebasedatabase.app';
-    const dbPath = '/ElectroBlocks/piano';
+function fbGet(path) {
+  return fetch(DB + path + '.json').then(r => r.ok ? r.json() : null).catch(() => null);
+}
 
-    let lastNote    = null;
-    let pressCount  = 0;
-    let noteHistory = [];
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let lastNote       = null;
+let noteHistoryAll = [];   // all notes, any block
+let histB1         = [];
+let histB2         = [];
+let currentSong    = null;
+let songStep       = 0;
+let songPlaying    = false;
+let colourHistory  = [];
+let sectionFills   = {};
+let selectedImage  = null;
+let liveRGB        = { r:0, g:0, b:0 };
 
-    window.addEventListener('load', () => {
-      setStatus('connecting', 'Connecting...');
-      poll();
-      setInterval(poll, 2000);
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
+function goPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   FIREBASE POLLING
+═══════════════════════════════════════════ */
+async function poll() {
+  try {
+    const [piano, ina] = await Promise.all([
+      fbGet('/ElectroBlocks/piano'),
+      fbGet('/ElectroBlocks/ina219'),
+    ]);
+
+    const dot  = document.getElementById('live-dot');
+    const ltxt = document.getElementById('live-text');
+    dot.className = 'live-dot online';
+    ltxt.textContent = 'Live';
+
+    if (ina) updateBattery(ina);
+    if (piano) {
+      if (piano.uptime) document.getElementById('uptime-val').textContent = piano.uptime;
+
+      const b1 = piano.B1_Status;
+      const b2 = piano.B2_Status;
+      updateBlockBadge('b1', b1);
+      updateBlockBadge('b2', b2);
+      updateBlocksOnlineCount(b1, b2);
+
+      if (piano.lastNote && piano.lastNote !== lastNote) {
+        lastNote = piano.lastNote;
+        handleNewNote(lastNote, piano.lastPressedAt);
+      }
+    }
+
+    // Colour block — try reading from firebase
+    const colour = await fbGet('/ElectroBlocks/colour');
+    if (colour) {
+      updateColourBlock(colour);
+    } else {
+      // Try to infer from current piano data if colour not separate
+    }
+
+  } catch(e) {
+    document.getElementById('live-dot').className = 'live-dot';
+    document.getElementById('live-text').textContent = 'Offline';
+  }
+}
+
+/* ═══════════════════════════════════════════
+   BATTERY
+═══════════════════════════════════════════ */
+function updateBattery(ina) {
+  const pct     = parseFloat(ina.batteryPercentage) || 0;
+  const current = parseFloat(ina.current_mA)        || 0;
+  const used    = parseFloat(ina.capacity_mAh)      || 0;
+  const p       = Math.round(pct * 10) / 10;
+  const w       = Math.max(0, Math.min(100, pct));
+
+  document.getElementById('batt-fill').style.width = w + '%';
+  document.getElementById('batt-overlay').textContent = p + '%';
+  document.getElementById('batt-big').textContent     = p + '%';
+  document.getElementById('bst-current').textContent  = current.toFixed(1) + ' mA';
+  document.getElementById('bst-used').textContent     = used.toFixed(2) + ' mAh';
+
+  let color, face, faceClass, statusTxt, tipBg, tipColor, tipIcon, tipTxt, cardClass, fillColor;
+
+  if (pct > 60) {
+    color='var(--green)'; face='😊'; faceClass='face-happy';
+    statusTxt='All good! 🎉'; tipBg='rgba(34,214,122,0.08)'; tipColor='var(--green)';
+    tipIcon='✅'; tipTxt='Battery is healthy! Keep playing!';
+    cardClass='level-high'; fillColor='var(--green)';
+  } else if (pct > 30) {
+    color='var(--amber)'; face='😐'; faceClass='';
+    statusTxt='Getting there…'; tipBg='rgba(255,184,48,0.08)'; tipColor='var(--amber)';
+    tipIcon='⚠️'; tipTxt='Battery is half full. Maybe charge soon?';
+    cardClass='level-mid'; fillColor='var(--amber)';
+  } else if (pct > 10) {
+    color='var(--red)'; face='😟'; faceClass='';
+    statusTxt='Low battery!'; tipBg='rgba(255,79,94,0.08)'; tipColor='var(--red)';
+    tipIcon='🔴'; tipTxt='Battery is low! Please charge soon!';
+    cardClass='level-low'; fillColor='var(--red)';
+  } else {
+    color='var(--red)'; face='😱'; faceClass='batt-critical';
+    statusTxt='Almost empty!!'; tipBg='rgba(255,79,94,0.12)'; tipColor='var(--red)';
+    tipIcon='🚨'; tipTxt='CHARGE NOW! Battery is almost dead!';
+    cardClass='level-low'; fillColor='var(--red)';
+  }
+
+  const bigPct = document.getElementById('batt-big');
+  bigPct.style.color = color;
+  document.getElementById('batt-status').textContent = statusTxt;
+  document.getElementById('batt-status').style.color = color;
+  const faceEl = document.getElementById('batt-face');
+  faceEl.textContent = face; faceEl.className = 'batt-face ' + faceClass;
+  document.getElementById('batt-fill').style.background = fillColor;
+  const tip = document.getElementById('batt-tip');
+  tip.style.background = tipBg; tip.style.color = tipColor;
+  document.getElementById('batt-tip-icon').textContent = tipIcon;
+  document.getElementById('batt-tip-text').textContent = tipTxt;
+  document.getElementById('battery-card').className = 'battery-card ' + cardClass;
+}
+
+/* ═══════════════════════════════════════════
+   BLOCK BADGE
+═══════════════════════════════════════════ */
+function updateBlockBadge(id, status) {
+  const isOn = status && status.toLowerCase() !== 'disconnected';
+  const vis   = document.getElementById('vis-'+id);
+  const badge = document.getElementById('badge-'+id);
+  vis.className   = 'block-vis ' + (isOn ? 'connected' : 'disconnected');
+  badge.className = 'conn-badge ' + (isOn ? 'on' : 'off');
+  badge.querySelector('span').textContent = isOn ? 'Connected' : 'Disconnected';
+}
+
+function updateBlocksOnlineCount(b1, b2) {
+  let count = 0;
+  if (b1 && b1.toLowerCase() !== 'disconnected') count++;
+  if (b2 && b2.toLowerCase() !== 'disconnected') count++;
+  // Colour block status — assume connected if we get colour data
+  document.getElementById('blocks-online-val').textContent = count + ' / 3';
+}
+
+/* ═══════════════════════════════════════════
+   NOTE HANDLING
+═══════════════════════════════════════════ */
+const NOTE_TO_BLOCK = {
+  DO:'b1', RE:'b1', MI:'b1',
+  FA:'b2', SOL:'b2', LA:'b2',
+  SI:'b1', DO2:'b1', RE2:'b1',
+};
+
+function handleNewNote(note, pressedAt) {
+  // Home page last note
+  document.getElementById('home-last-note').textContent = note;
+  const t = pressedAt ? new Date(pressedAt).toLocaleTimeString() : new Date().toLocaleTimeString();
+  document.getElementById('home-last-time').textContent = t;
+
+  // Piano key flash on home vis
+  flashHomeKey(note);
+
+  // Block history
+  const blk = NOTE_TO_BLOCK[note];
+  if (blk === 'b1') {
+    histB1.unshift(note);
+    if (histB1.length > 5) histB1.pop();
+    renderMiniHistory('history-b1', histB1);
+  } else if (blk === 'b2') {
+    histB2.unshift(note);
+    if (histB2.length > 5) histB2.pop();
+    renderMiniHistory('history-b2', histB2);
+  }
+
+  // All history
+  noteHistoryAll.unshift(note);
+  if (noteHistoryAll.length > 20) noteHistoryAll.pop();
+  renderPianoNoteHistory();
+
+  // Piano page step advance
+  if (songPlaying && currentSong) {
+    advanceSongStep(note);
+  }
+}
+
+function flashHomeKey(note) {
+  const el = document.getElementById('pvk-'+note);
+  if (!el) return;
+  el.classList.add('pressed');
+  const ripple = document.createElement('div');
+  ripple.className = 'key-ripple';
+  el.appendChild(ripple);
+  setTimeout(() => { ripple.remove(); el.classList.remove('pressed'); }, 600);
+}
+
+function renderMiniHistory(containerId, arr) {
+  const el = document.getElementById(containerId);
+  if (!arr.length) { el.innerHTML = '<span class="empty-note">—</span>'; return; }
+  el.innerHTML = arr.map(n => `<span class="note-pill">${n}</span>`).join('');
+}
+
+/* ═══════════════════════════════════════════
+   COLOUR BLOCK
+═══════════════════════════════════════════ */
+function updateColourBlock(data) {
+  const r = parseInt(data.r ?? data.R ?? 0);
+  const g = parseInt(data.g ?? data.G ?? 0);
+  const b = parseInt(data.b ?? data.B ?? 0);
+  liveRGB = { r, g, b };
+
+  const hex = toHex(r,g,b);
+  const rgb = `rgb(${r},${g},${b})`;
+
+  // Home block vis
+  const b3vis = document.getElementById('vis-b3');
+  b3vis.className = 'block-vis connected';
+  const b3badge = document.getElementById('badge-b3');
+  b3badge.className = 'conn-badge on';
+  b3badge.querySelector('span').textContent = 'Connected';
+
+  document.getElementById('rgb-r-bar').style.width = (r/255*100)+'%';
+  document.getElementById('rgb-g-bar').style.width = (g/255*100)+'%';
+  document.getElementById('rgb-b-bar').style.width = (b/255*100)+'%';
+  document.getElementById('rgb-r-num').textContent = r;
+  document.getElementById('rgb-g-num').textContent = g;
+  document.getElementById('rgb-b-num').textContent = b;
+  document.getElementById('home-swatch').style.background = rgb;
+  document.getElementById('home-hex').textContent = hex;
+
+  // Colour page sliders (passive display)
+  document.getElementById('cc-r').value = r;
+  document.getElementById('cc-g').value = g;
+  document.getElementById('cc-b').value = b;
+  document.getElementById('cc-rv').textContent = r;
+  document.getElementById('cc-gv').textContent = g;
+  document.getElementById('cc-bv').textContent = b;
+  document.getElementById('cc-swatch').style.background = rgb;
+  document.getElementById('cc-hex').textContent = hex;
+}
+
+function toHex(r,g,b) {
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0').toUpperCase()).join('');
+}
+
+/* ═══════════════════════════════════════════
+   SESSION GRAPH (static demo data + today)
+═══════════════════════════════════════════ */
+function buildGraph() {
+  const sessions = [
+    { d:'Mon', notes:3, colour:2 },
+    { d:'Tue', notes:8, colour:5 },
+    { d:'Wed', notes:2, colour:0 },
+    { d:'Thu', notes:12, colour:7 },
+    { d:'Fri', notes:5, colour:3 },
+    { d:'Sat', notes:1, colour:1 },
+    { d:'Today', notes: noteHistoryAll.length, colour: colourHistory.length, today:true },
+  ];
+  const maxN = Math.max(...sessions.map(s=>s.notes), 1);
+  const maxC = Math.max(...sessions.map(s=>s.colour), 1);
+  const maxAll = Math.max(maxN, maxC);
+  const el = document.getElementById('graph-bars');
+  el.innerHTML = '';
+  sessions.forEach(s => {
+    const hn = Math.round((s.notes / maxAll) * 100);
+    const hc = Math.round((s.colour / maxAll) * 100);
+    const w  = document.createElement('div');
+    w.className = 'gbar-wrap';
+    w.innerHTML = `
+      <div style="position:relative;display:flex;gap:4px;align-items:flex-end;height:110px;">
+        <div class="gbar" style="flex:1;height:${hn}px;background:${s.today?'var(--blue)':'rgba(77,142,255,0.3)'};">
+          ${s.notes>0?`<span class="gbar-val">${s.notes}</span>`:''}
+        </div>
+        <div class="gbar" style="flex:1;height:${hc}px;background:${s.today?'var(--purple)':'rgba(157,107,255,0.3)'};">
+        </div>
+      </div>
+      <div class="gbar-lbl">${s.d}</div>`;
+    el.appendChild(w);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   PIANO PAGE
+═══════════════════════════════════════════ */
+const SONGS = [
+  { id:'hb',     name:'Happy Birthday', emoji:'🎂', diff:3, notes:['DO','RE','MI','DO','MI','RE','SOL','MI','FA','MI','RE','DO'] },
+  { id:'jb',     name:'Jingle Bells',   emoji:'🎄', diff:2, notes:['MI','MI','MI','MI','MI','MI','MI','SOL','DO','RE','MI'] },
+  { id:'abc',    name:'ABC Song',        emoji:'🔤', diff:1, notes:['DO','DO','SOL','SOL','LA','LA','SOL','FA','FA','MI','MI','RE','RE','DO'] },
+  { id:'twinkle',name:'Twinkle Star',   emoji:'⭐', diff:1, notes:['DO','DO','SOL','SOL','LA','LA','SOL','SOL','FA','FA','MI','MI','RE'] },
+  { id:'ode',    name:'Ode to Joy',      emoji:'🎻', diff:3, notes:['MI','MI','FA','SOL','SOL','FA','MI','RE','DO','DO','RE','MI','MI','RE','RE'] },
+  { id:'mary',   name:'Mary Had a Lamb', emoji:'🐑', diff:1, notes:['MI','RE','DO','RE','MI','MI','MI','RE','RE','RE','MI','SOL','SOL'] },
+];
+
+const BLOCKS_DEF = [
+  { label:'Block 1', notes:['DO','RE','MI'] },
+  { label:'Block 2', notes:['FA','SOL','LA'] },
+  { label:'Block 3', notes:['SI','DO2','RE2'] },
+];
+
+function buildSongGrid() {
+  const el = document.getElementById('song-grid');
+  SONGS.forEach(s => {
+    const d = document.createElement('div');
+    d.className = 'song-card' + (currentSong && currentSong.id === s.id ? ' active' : '');
+    d.innerHTML = `<span class="song-emoji">${s.emoji}</span><div class="song-name">${s.name}</div>
+      <div class="song-diff">${[1,2,3].map(i=>`<div class="diff-star${i<=s.diff?' on':''}"></div>`).join('')}</div>`;
+    d.onclick = () => selectSong(s);
+    el.appendChild(d);
+  });
+}
+
+function selectSong(s) {
+  currentSong = s;
+  songStep = 0; songPlaying = false;
+  document.querySelectorAll('.song-card').forEach((c,i)=>c.classList.toggle('active', SONGS[i].id===s.id));
+  document.getElementById('start-btn').style.display = 'inline-block';
+  document.getElementById('start-btn').disabled = false;
+  document.getElementById('reset-btn').style.display = 'none';
+  updateProgressUI(0, s.notes.length);
+  document.getElementById('pp-next').textContent = '—';
+  renderAllBlocks();
+}
+
+function renderAllBlocks() {
+  const el = document.getElementById('all-blocks-row');
+  el.innerHTML = '';
+  BLOCKS_DEF.forEach(blk => {
+    const bDiv = document.createElement('div');
+    bDiv.className = 'phys-block';
+    bDiv.innerHTML = `<div class="phys-block-label">${blk.label}</div><div class="phys-keys" id="phys-${blk.label.replace(' ','')}"></div>`;
+    el.appendChild(bDiv);
+    const row = bDiv.querySelector('.phys-keys');
+    blk.notes.forEach(note => {
+      const isGrey  = songPlaying && currentSong && songStep > currentSong.notes.lastIndexOf(note);
+      const isNext  = songPlaying && currentSong && currentSong.notes[songStep] === note;
+      const k = document.createElement('div');
+      k.className = 'phys-key' + (isGrey?' pressed-grey':'') + (isNext?' lit':'');
+      k.id = 'pk-'+note;
+      k.innerHTML = `<div class="phys-dot"></div><span class="phys-note">${note}</span>`;
+      row.appendChild(k);
     });
+  });
+}
 
-    function setStatus(state, text) {
-      document.getElementById('status-dot').className = 'dot ' + state;
-      document.getElementById('status-text').textContent = text;
-    }
+function startSong() {
+  if (!currentSong) return;
+  songPlaying = true; songStep = 0;
+  document.getElementById('start-btn').style.display = 'none';
+  document.getElementById('reset-btn').style.display = 'inline-block';
+  updateProgressUI(0, currentSong.notes.length);
+  document.getElementById('pp-next').textContent = currentSong.notes[0];
+  highlightNextKey();
+}
 
-    async function poll() {
-      try {
-        const res = await fetch(dbUrl + dbPath + '.json');
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
+function advanceSongStep(note) {
+  if (!songPlaying || !currentSong) return;
+  if (currentSong.notes[songStep] !== note) return;
+  songStep++;
+  const total = currentSong.notes.length;
+  updateProgressUI(songStep, total);
+  if (songStep >= total) {
+    songPlaying = false;
+    document.getElementById('pp-next').textContent = '🎉 Done!';
+    renderAllBlocks();
+  } else {
+    document.getElementById('pp-next').textContent = currentSong.notes[songStep];
+    highlightNextKey();
+  }
+}
 
-        if (!data) { setStatus('online', 'Connected — waiting for ESP32 data'); return; }
-        setStatus('online', 'Live');
+function highlightNextKey() {
+  if (!currentSong) return;
+  BLOCKS_DEF.forEach(blk => blk.notes.forEach(note => {
+    const el = document.getElementById('pk-'+note);
+    if (!el) return;
+    el.className = 'phys-key' + (currentSong.notes[songStep]===note ? ' lit' : '');
+  }));
+}
 
-        // Uptime
-        if (data.uptime) document.getElementById('uptime-val').textContent = data.uptime;
+function updateProgressUI(step, total) {
+  const pct = total ? Math.round(step/total*100) : 0;
+  document.getElementById('pp-fill').style.width = pct+'%';
+  document.getElementById('pp-pct').textContent  = pct+'%';
+}
 
-        // Note
-        if (data.lastNote && data.lastNote !== lastNote) {
-          lastNote = data.lastNote;
-          pressCount++;
-          document.getElementById('press-count').textContent = pressCount;
-          document.getElementById('last-time').textContent = new Date().toLocaleTimeString();
-          noteHistory.unshift(lastNote);
-          if (noteHistory.length > 20) noteHistory.pop();
-          updateBadge(lastNote);
-          updateHistory();
-        }
+function resetSong() {
+  songPlaying = false; songStep = 0;
+  document.getElementById('start-btn').style.display = 'inline-block';
+  document.getElementById('start-btn').disabled = false;
+  document.getElementById('reset-btn').style.display = 'none';
+  document.getElementById('pp-next').textContent = '—';
+  updateProgressUI(0, currentSong ? currentSong.notes.length : 1);
+  renderAllBlocks();
+}
 
-        // INA219 battery data — fetch from /ElectroBlocks/ina219
-        const inaRes = await fetch(dbUrl + '/ElectroBlocks/ina219.json');
-        if (inaRes.ok) {
-          const ina = await inaRes.json();
-          if (ina) updateBattery(ina);
-        }
+function renderPianoNoteHistory() {
+  const el = document.getElementById('piano-note-history');
+  if (!noteHistoryAll.length) { el.innerHTML = '<span class="empty-note">No notes yet this session…</span>'; return; }
+  const colors = {'DO':'var(--blue)','RE':'var(--cyan)','MI':'var(--green)','FA':'var(--amber)','SOL':'var(--purple)','LA':'var(--pink)','SI':'var(--red)','DO2':'var(--blue)','RE2':'var(--cyan)'};
+  el.innerHTML = noteHistoryAll.map(n=>`<span class="note-pill" style="background:rgba(77,142,255,0.12);color:${colors[n]||'var(--blue)'}">${n}</span>`).join('');
+}
 
-      } catch (e) {
-        setStatus('offline', 'Error: ' + e.message);
-      }
-    }
+/* ═══════════════════════════════════════════
+   COLOUR PAGE
+═══════════════════════════════════════════ */
+const IMAGES = [
+  { id:'sun', name:'Sunny Day', sections:[
+    {id:'sky',   path:'M0,0 h180 v90 Q90,115 0,90 Z',                              fill:'#87CEEB'},
+    {id:'sun',   cx:90, cy:45, r:28, fill:'#FFD700', type:'circle'},
+    {id:'cloud', path:'M40,55 Q50,38 65,48 Q70,32 88,40 Q98,28 110,40 Q122,34 118,52 Q126,56 120,63 Q100,68 80,65 Q58,68 40,62 Z', fill:'#fff'},
+    {id:'grass', path:'M0,90 Q90,115 180,90 v110 h-180 Z',                         fill:'#90EE90'},
+  ]},
+  { id:'rocket', name:'Space Rocket', sections:[
+    {id:'space', path:'M0,0 h180 v200 h-180 Z',  fill:'#1a1a2e'},
+    {id:'body',  path:'M80,160 L90,28 L100,160 Z', fill:'#ddd'},
+    {id:'wingL', path:'M80,160 L58,188 L80,175 Z', fill:'#ff6b6b'},
+    {id:'wingR', path:'M100,160 L122,188 L100,175 Z', fill:'#ff6b6b'},
+    {id:'window',cx:90, cy:108, r:13, fill:'#4d8eff', type:'circle'},
+    {id:'flame', path:'M83,163 Q90,196 97,163 Q90,176 83,163 Z', fill:'#ffd93d'},
+  ]},
+  { id:'flower', name:'Garden Flower', sections:[
+    {id:'bg',     path:'M0,0 h180 v200 h-180 Z', fill:'#e8f5e9'},
+    {id:'stem',   path:'M86,118 L94,118 L94,192 L86,192 Z', fill:'#4CAF50'},
+    {id:'leaf',   path:'M94,158 Q122,147 118,168 Q106,178 94,167 Z', fill:'#66BB6A'},
+    {id:'p1',     cx:90, cy:73, r:23, fill:'#f48fb1', type:'circle'},
+    {id:'p2',     cx:66, cy:90, r:19, fill:'#f48fb1', type:'circle'},
+    {id:'p3',     cx:114,cy:90, r:19, fill:'#f48fb1', type:'circle'},
+    {id:'centre', cx:90, cy:94, r:14, fill:'#FFD700', type:'circle'},
+  ]},
+  { id:'house', name:'My House', sections:[
+    {id:'sky',    path:'M0,0 h180 v200 h-180 Z',      fill:'#87CEEB'},
+    {id:'ground', path:'M0,162 h180 v38 h-180 Z',     fill:'#90EE90'},
+    {id:'wall',   path:'M33,97 h114 v65 h-114 Z',     fill:'#FFF9C4'},
+    {id:'roof',   path:'M18,102 L90,33 L162,102 Z',   fill:'#ff6b6b'},
+    {id:'door',   path:'M77,135 h26 v27 h-26 Z',      fill:'#8B4513'},
+    {id:'winL',   path:'M44,112 h26 v22 h-26 Z',      fill:'#4d8eff'},
+    {id:'winR',   path:'M110,112 h26 v22 h-26 Z',     fill:'#4d8eff'},
+    {id:'chimney',path:'M106,60 h20 v40 h-20 Z',      fill:'#9E9E9E'},
+  ]},
+];
 
-    function updateBattery(ina) {
-      const pct     = parseFloat(ina.batteryPercentage) || 0;
-      const current = parseFloat(ina.current_mA)        || 0;
-      const used    = parseFloat(ina.capacity_mAh)      || 0;
+function buildImagesGrid() {
+  selectedImage = IMAGES[0];
+  const el = document.getElementById('images-grid');
+  IMAGES.forEach(img => {
+    const card = document.createElement('div');
+    card.className = 'img-card' + (img.id===selectedImage.id?' selected':'');
+    card.id = 'imgcard-'+img.id;
+    card.innerHTML = `
+      <div class="img-canvas-wrap">
+        <svg id="imgsvg-${img.id}" viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">${renderSVG(img)}</svg>
+      </div>
+      <div class="img-footer">
+        <span class="img-name">${img.name}</span>
+        <button class="apply-btn" onclick="applyColourAll('${img.id}')">Fill All</button>
+      </div>
+      <div class="section-tags">${img.sections.map(s=>`<span class="sec-tag" id="stag-${img.id}-${s.id}" style="background:${sectionFills[img.id+':'+s.id]||s.fill};color:#000;" onclick="applyColourSection('${img.id}','${s.id}')">${s.id}</span>`).join('')}</div>`;
+    card.onclick = e => { if(e.target.tagName!=='BUTTON'&&e.target.tagName!=='SPAN') selectImage(img.id); };
+    el.appendChild(card);
+  });
+}
 
-      const pctRounded = Math.round(pct * 10) / 10;
+function renderSVG(img) {
+  return img.sections.map(s => {
+    const fill = sectionFills[img.id+':'+s.id] || s.fill;
+    if (s.type==='circle') return `<circle cx="${s.cx}" cy="${s.cy}" r="${s.r}" fill="${fill}" stroke="#fff" stroke-width="1"/>`;
+    return `<path d="${s.path}" fill="${fill}" stroke="#fff" stroke-width="0.5"/>`;
+  }).join('');
+}
 
-      // Update fill bar
-      const fill = document.getElementById('battery-fill');
-      fill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+function refreshSVG(imgId) {
+  const img = IMAGES.find(i=>i.id===imgId);
+  if (!img) return;
+  const svgEl = document.getElementById('imgsvg-'+imgId);
+  if (svgEl) svgEl.innerHTML = renderSVG(img);
+  img.sections.forEach(s => {
+    const tag = document.getElementById('stag-'+imgId+'-'+s.id);
+    if (tag) tag.style.background = sectionFills[imgId+':'+s.id] || s.fill;
+  });
+}
 
-      // Color based on level
-      let color, face, statusText, tipBg, tipColor, tipIcon, tipText, cardClass, faceClass;
+function selectImage(id) {
+  selectedImage = IMAGES.find(i=>i.id===id);
+  document.querySelectorAll('.img-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('imgcard-'+id).classList.add('selected');
+}
 
-      if (pct > 60) {
-        color = '#22c55e'; face = '😊'; faceClass = 'face-happy';
-        statusText = 'All good! 🎉';
-        tipBg = '#0f2a1a'; tipColor = '#4ade80';
-        tipIcon = '✅'; tipText = 'Battery is healthy! Keep playing!';
-        cardClass = 'level-high';
-        fill.style.background = '#22c55e';
-      } else if (pct > 30) {
-        color = '#f59e0b'; face = '😐'; faceClass = '';
-        statusText = 'Getting there...';
-        tipBg = '#2a1f00'; tipColor = '#fbbf24';
-        tipIcon = '⚠️'; tipText = 'Battery is half full. Maybe charge soon?';
-        cardClass = 'level-mid';
-        fill.style.background = '#f59e0b';
-      } else if (pct > 10) {
-        color = '#ef4444'; face = '😟'; faceClass = '';
-        statusText = 'Low battery!';
-        tipBg = '#2a0a0a'; tipColor = '#f87171';
-        tipIcon = '🔴'; tipText = 'Battery is low! Please charge soon!';
-        cardClass = 'level-low';
-        fill.style.background = '#ef4444';
-      } else {
-        color = '#ef4444'; face = '😱'; faceClass = '';
-        statusText = 'Almost empty!!';
-        tipBg = '#2a0a0a'; tipColor = '#f87171';
-        tipIcon = '🚨'; tipText = 'CHARGE NOW! Battery is almost dead!';
-        cardClass = 'level-low';
-        fill.style.background = '#ef4444';
-      }
+function applyColourSection(imgId, secId) {
+  const hex = toHex(liveRGB.r, liveRGB.g, liveRGB.b);
+  sectionFills[imgId+':'+secId] = hex;
+  addHistoryDot(hex);
+  refreshSVG(imgId);
+}
 
-      // Apply to DOM
-      document.getElementById('battery-big-pct').textContent  = pctRounded + '%';
-      document.getElementById('battery-big-pct').style.color  = color;
-      document.getElementById('battery-pct-inside').textContent = pctRounded + '%';
-      document.getElementById('battery-status-label').textContent = statusText;
-      document.getElementById('battery-status-label').style.color = color;
+function applyColourAll(imgId) {
+  const img = IMAGES.find(i=>i.id===imgId);
+  if (!img) return;
+  const hex = toHex(liveRGB.r, liveRGB.g, liveRGB.b);
+  img.sections.forEach(s => { sectionFills[imgId+':'+s.id] = hex; });
+  addHistoryDot(hex);
+  refreshSVG(imgId);
+}
 
-      const faceEl = document.getElementById('battery-face');
-      faceEl.textContent = face;
-      faceEl.className = 'battery-face ' + faceClass;
+function addHistoryDot(hex) {
+  if (!colourHistory.includes(hex)) {
+    colourHistory.unshift(hex);
+    if (colourHistory.length > 14) colourHistory.pop();
+    const el = document.getElementById('cc-history-dots');
+    el.innerHTML = colourHistory.map(c=>`<div class="cc-hist-dot" style="background:${c}" title="${c}" onclick="applyHistColour('${c}')"></div>`).join('');
+  }
+}
 
-      document.getElementById('bstat-current').textContent = current.toFixed(1) + ' mA';
-      document.getElementById('bstat-used').textContent    = used.toFixed(1) + ' mAh';
+function applyHistColour(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  liveRGB = {r,g,b};
+  updateColourBlock({r,g,b});
+}
 
-      const tip = document.getElementById('battery-tip');
-      tip.style.background = tipBg;
-      tip.style.color = tipColor;
-      document.getElementById('battery-tip-icon').textContent = tipIcon;
-      document.getElementById('battery-tip-text').textContent = tipText;
+function onCCSlide() {
+  const r = +document.getElementById('cc-r').value;
+  const g = +document.getElementById('cc-g').value;
+  const b = +document.getElementById('cc-b').value;
+  liveRGB = {r,g,b};
+  document.getElementById('cc-rv').textContent = r;
+  document.getElementById('cc-gv').textContent = g;
+  document.getElementById('cc-bv').textContent = b;
+  const hex = toHex(r,g,b);
+  document.getElementById('cc-swatch').style.background = `rgb(${r},${g},${b})`;
+  document.getElementById('cc-hex').textContent = hex;
+}
 
-      const card = document.getElementById('battery-card');
-      card.className = 'battery-card ' + cardClass;
-    }
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+buildGraph();
+buildSongGrid();
+buildImagesGrid();
+// Default song
+selectSong(SONGS[0]);
 
-    function updateBadge(note) {
-      const el = document.getElementById('note-badge');
-      el.textContent = note;
-      el.className = 'note-badge note-' + note + ' flash';
-      setTimeout(() => el.classList.remove('flash'), 400);
-    }
+// Live poll
+poll();
+setInterval(poll, 2500);
 
-    function updateHistory() {
-      const el = document.getElementById('history-list');
-      if (!noteHistory.length) {
-        el.innerHTML = '<span class="waiting">waiting for notes...</span>';
-        return;
-      }
-      el.innerHTML = noteHistory.map(n => `<span class="pill pill-${n}">${n}</span>`).join('');
-    }
-  </script>
-
+// Graph refreshes when notes come in
+setInterval(buildGraph, 15000);
+</script>
 </body>
 </html>
