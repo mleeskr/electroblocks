@@ -1,1345 +1,1137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ElectroBlocks Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ElectroBlocks Studio Pro</title>
 
-    :root {
-      --bg: #0b0f1a;
-      --surface: #131929;
-      --surface2: #1a2234;
-      --border: #1e2d44;
-      --border2: #243450;
-      --text: #e8eeff;
-      --muted: #4a5a7a;
-      --muted2: #6a7a9a;
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"/>
 
-      --green: #22d67a;
-      --amber: #ffb830;
-      --red: #ff4f5e;
-      --blue: #4d8eff;
-      --purple: #9d6bff;
-      --cyan: #00d4ff;
-      --pink: #ff6bb5;
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-      --radius: 18px;
-      --radius-sm: 12px;
-    }
+:root{
+  --bg:#090d16;
+  --surface:#111726;
+  --surface2:#172037;
+  --border:#1d2a4a;
+  --border2:#263765;
+  --text:#edf3ff;
+  --muted:#5f719d;
+  --muted2:#8aa0cf;
+  --blue:#4d8eff;
+  --cyan:#00d4ff;
+  --green:#22d67a;
+  --red:#ff4f5e;
+  --amber:#ffb830;
+  --purple:#9d6bff;
+  --radius:18px;
+}
 
-    html { scroll-behavior: smooth; }
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
 
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+/* =========================================================
+   TOOLBAR & NAVBAR
+========================================================= */
+.nav{
+  position:sticky;
+  top:0;
+  z-index:500;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:14px 24px;
+  background:rgba(9,13,22,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
 
-    /* ─── NAV ─── */
-    .nav {
-      display: flex;
-      align-items: center;
-      padding: 14px 28px;
-      background: rgba(11,15,26,0.95);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      backdrop-filter: blur(12px);
-    }
-    .nav-logo {
-      font-family: 'Baloo 2', cursive;
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--text);
-      margin-right: auto;
-      letter-spacing: 0.5px;
-    }
-    .nav-logo span { color: var(--blue); }
-    .nav-logo em { color: var(--cyan); font-style: normal; }
+.nav-logo{
+  font-family:'Baloo 2',cursive;
+  font-size:24px;
+  font-weight:800;
+}
 
-    .nav-tabs { display: flex; gap: 4px; }
-    .nav-tab {
-      padding: 8px 20px;
-      border-radius: 50px;
-      border: 1px solid transparent;
-      background: transparent;
-      font-family: 'Nunito', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--muted2);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .nav-tab:hover { color: var(--text); background: var(--surface2); }
-    .nav-tab.active {
-      background: var(--blue);
-      color: #fff;
-      border-color: transparent;
-    }
+.nav-logo span{ color:var(--blue); }
+.nav-logo em{ color:var(--cyan); font-style:normal; }
 
-    .live-pill {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin-left: 20px;
-      padding: 6px 14px;
-      border-radius: 50px;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted2);
-    }
-    .live-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--red);
-      transition: background 0.4s;
-    }
-    .live-dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); animation: livepulse 2s infinite; }
-    .live-dot.connecting { background: var(--amber); }
-    @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.nav-tabs{
+  margin-left:auto;
+  display:flex;
+  gap:8px;
+}
 
-    /* ─── PAGES ─── */
-    .page { display: none; padding: 28px; max-width: 1100px; margin: 0 auto; }
-    .page.active { display: block; animation: fadeUp 0.3s ease; }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.nav-tab{
+  border:none;
+  cursor:pointer;
+  padding:10px 18px;
+  border-radius:999px;
+  background:transparent;
+  color:var(--muted2);
+  font-weight:800;
+  font-size:14px;
+  transition:0.25s;
+}
 
-    /* ─── SECTION HEADER ─── */
-    .sec-head {
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--muted);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .sec-head::after { content:''; flex:1; height:1px; background:var(--border); }
+.nav-tab:hover{
+  background:var(--surface2);
+  color:white;
+}
 
-    /* ─── BATTERY ─── */
-    .battery-card {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-      transition: border-color 0.5s, box-shadow 0.5s;
-      position: relative;
-      overflow: hidden;
-    }
-    .battery-card::before {
-      content:'';
-      position:absolute;
-      inset:0;
-      background: radial-gradient(ellipse 60% 60% at 10% 50%, rgba(77,142,255,0.04) 0%, transparent 70%);
-      pointer-events:none;
-    }
-    .battery-card.level-low { border-color: rgba(255,79,94,0.4); box-shadow: 0 0 24px rgba(255,79,94,0.08); }
-    .battery-card.level-mid { border-color: rgba(255,184,48,0.3); }
-    .battery-card.level-high { border-color: rgba(34,214,122,0.25); }
+.nav-tab.active{
+  background:var(--blue);
+  color:white;
+}
 
-    .batt-icon-col { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink:0; }
+.live-pill{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 14px;
+  border-radius:999px;
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  font-size:12px;
+  font-weight:800;
+}
 
-    .batt-body {
-      width: 100px; height: 50px;
-      border: 2.5px solid #2a3a55;
-      border-radius: 9px;
-      background: #0b0f1a;
-      position: relative;
-      overflow: hidden;
-    }
-    .batt-body::after {
-      content:'';
-      position:absolute;
-      right:-9px; top:50%; transform:translateY(-50%);
-      width:7px; height:20px;
-      background:#2a3a55;
-      border-radius:0 4px 4px 0;
-    }
-    .batt-fill {
-      position:absolute; left:0;top:0;bottom:0;
-      border-radius:6px;
-      transition:width 1s ease, background 0.8s;
-    }
-    .batt-fill::after {
-      content:'';
-      position:absolute;
-      top:5px;left:6px;right:6px;
-      height:6px;
-      background:rgba(255,255,255,0.12);
-      border-radius:3px;
-    }
-    .batt-pct-overlay {
-      position:absolute; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      font-size:13px; font-weight:900;
-      color:#fff;
-      text-shadow:0 1px 4px rgba(0,0,0,0.7);
-      z-index:2;
-    }
-    .batt-face { font-size:2rem; line-height:1; }
+.live-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--red);
+}
 
-    .batt-info { flex:1; min-width:180px; }
-    .batt-big { font-family:'Baloo 2',cursive; font-size:3.8rem; font-weight:800; line-height:1; transition:color 0.5s; }
-    .batt-status { font-size:1rem; font-weight:700; margin-top:2px; transition:color 0.5s; }
-    .batt-stats { display:flex; gap:24px; margin-top:12px; flex-wrap:wrap; }
-    .bst { display:flex; flex-direction:column; gap:2px; }
-    .bst-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
-    .bst-val { font-size:1rem; font-weight:700; font-family:'Courier Prime',monospace; color:#aabbd4; }
+.live-dot.online{
+  background:var(--green);
+  box-shadow: 0 0 8px var(--green), 0 0 16px rgba(34,214,122,0.5);
+  animation:pulseGlow 2s infinite;
+}
 
-    .batt-tip {
-      margin-top:12px; padding:9px 14px;
-      border-radius:10px;
-      font-size:0.83rem; font-weight:700;
-      display:flex; align-items:center; gap:8px;
-      transition:all 0.5s;
-    }
-    @keyframes shakered { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
-    .batt-critical { animation:shakered 0.5s ease 0s 3; }
+@keyframes pulseGlow{
+  0%,100%{opacity:1}
+  50%{opacity:0.35}
+}
 
-    /* ─── UPTIME CARD ─── */
-    .stat-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .stat-card {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 18px 20px;
-    }
-    .stat-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; }
-    .stat-val { font-family:'Baloo 2',cursive; font-size:2rem; font-weight:700; color:var(--text); }
-    .stat-sub { font-size:11px; color:var(--muted); margin-top:4px; }
+/* =========================================================
+   PAGE CONTEXT
+========================================================= */
+.page{
+  display:none;
+  max-width:1400px;
+  margin:0 auto;
+  padding:24px;
+}
 
-    /* ─── SESSION GRAPH ─── */
-    .graph-card {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 22px;
-      margin-bottom: 20px;
-    }
-    .graph-title { font-family:'Baloo 2',cursive; font-size:16px; font-weight:700; color:var(--cyan); margin-bottom:16px; }
-    .graph-bars { display:flex; align-items:flex-end; gap:8px; height:120px; }
-    .gbar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
-    .gbar { width:100%; border-radius:6px 6px 0 0; min-height:3px; position:relative; transition:height 0.8s cubic-bezier(.34,1.56,.64,1); }
-    .gbar-val { position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:9px; font-weight:700; color:var(--muted2); white-space:nowrap; }
-    .gbar-lbl { font-size:10px; color:var(--muted); font-weight:700; }
+.page.active{
+  display:block;
+  animation:fadeUp 0.35s ease;
+}
 
-    /* ─── BLOCK VISUALIZER ─── */
-    .blocks-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    .block-vis {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      transition: border-color 0.4s;
-    }
-    .block-vis.connected { border-color: rgba(77,142,255,0.4); }
-    .block-vis.disconnected { border-color: var(--border); opacity: 0.7; }
+@keyframes fadeUp{
+  from{ opacity:0; transform:translateY(12px); }
+  to{ opacity:1; transform:none; }
+}
 
-    .block-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .block-name { font-family:'Baloo 2',cursive; font-size:16px; font-weight:700; }
-    .conn-badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 50px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-    .conn-badge.on { background:rgba(34,214,122,0.12); color:var(--green); }
-    .conn-badge.off { background:rgba(74,90,122,0.3); color:var(--muted2); }
-    .conn-badge-dot { width:6px; height:6px; border-radius:50%; }
-    .conn-badge.on .conn-badge-dot { background:var(--green); }
-    .conn-badge.off .conn-badge-dot { background:var(--muted); }
+.sec-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:28px 0 18px 0;
+  color:var(--muted);
+  text-transform:uppercase;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2px;
+}
 
-    /* Piano block buttons */
-    .piano-keys-row { display: flex; gap: 10px; justify-content: center; }
-    .piano-key-vis {
-      flex: 1;
-      aspect-ratio: 3/4;
-      max-width: 70px;
-      border-radius: 10px;
-      background: var(--surface2);
-      border: 1.5px solid var(--border2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      padding-bottom: 10px;
-      gap: 4px;
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    .piano-key-vis.pressed {
-      background: rgba(77,142,255,0.15);
-      border-color: var(--blue);
-      box-shadow: 0 0 16px rgba(77,142,255,0.2);
-    }
-    .piano-key-vis.pressed::after {
-      content:'';
-      position:absolute;
-      inset:0;
-      background:linear-gradient(180deg,rgba(77,142,255,0.08)0%,transparent 60%);
-    }
-    .key-note-lbl { font-size:13px; font-weight:900; color:var(--muted2); transition:color 0.3s; }
-    .piano-key-vis.pressed .key-note-lbl { color:#fff; }
-    .key-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--border2);
-      transition: all 0.3s;
-    }
-    .piano-key-vis.pressed .key-dot { background: var(--blue); box-shadow: 0 0 8px var(--blue); }
-    .key-ripple {
-      position:absolute;
-      width:60px; height:60px;
-      border-radius:50%;
-      background:rgba(77,142,255,0.15);
-      transform:scale(0);
-      pointer-events:none;
-      animation:ripple 0.5s ease-out forwards;
-    }
-    @keyframes ripple { to{transform:scale(3);opacity:0;} }
+.sec-head::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:var(--border);
+}
 
-    /* Last played note indicator */
-    .last-note-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 14px;
-      padding: 8px 12px;
-      background: var(--surface2);
-      border-radius: 10px;
-    }
-    .last-note-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; flex-shrink:0; }
-    .last-note-pills { display:flex; flex-wrap:wrap; gap:5px; }
-    .note-pill {
-      padding: 3px 10px;
-      border-radius: 50px;
-      font-size: 12px; font-weight: 800;
-      font-family: 'Courier Prime', monospace;
-      background: rgba(77,142,255,0.15);
-      color: var(--blue);
-      animation: popIn 0.3s ease;
-    }
-    @keyframes popIn { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+/* =========================================================
+   METRICS
+========================================================= */
+.metrics-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+  margin-bottom:12px;
+}
 
-    /* ─── COLOUR BLOCK ─── */
-    .colour-block-body { display: flex; align-items: center; gap: 20px; }
-    .rgb-sliders-vis { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-    .rgb-row-vis { display: flex; align-items: center; gap: 10px; }
-    .rgb-row-vis span:first-child { font-size:11px; font-weight:800; width:16px; text-align:center; }
-    .rgb-row-vis.R span:first-child { color:var(--red); }
-    .rgb-row-vis.G span:first-child { color:var(--green); }
-    .rgb-row-vis.B span:first-child { color:var(--blue); }
-    .rgb-track { flex:1; height:6px; background:var(--border2); border-radius:6px; overflow:hidden; }
-    .rgb-track-fill { height:100%; border-radius:6px; transition:width 0.5s ease; }
-    .rgb-row-vis.R .rgb-track-fill { background:var(--red); }
-    .rgb-row-vis.G .rgb-track-fill { background:var(--green); }
-    .rgb-row-vis.B .rgb-track-fill { background:var(--blue); }
-    .rgb-num { font-size:11px; font-weight:700; font-family:'Courier Prime',monospace; color:var(--muted2); width:28px; text-align:right; }
+.metric-card{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:18px;
+}
 
-    .colour-swatch-big {
-      width: 80px; height: 80px;
-      border-radius: 16px;
-      border: 2px solid var(--border2);
-      transition: background 0.5s;
-      flex-shrink: 0;
-    }
-    .colour-hex {
-      font-size: 11px;
-      font-family: 'Courier Prime', monospace;
-      color: var(--muted2);
-      text-align: center;
-      margin-top: 5px;
-    }
+.metric-title{
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:8px;
+}
 
-    /* ─── PIANO PAGE ─── */
-    .song-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 14px;
-      margin-bottom: 24px;
-    }
-    .song-card {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px 14px;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-    }
-    .song-card:hover { border-color: var(--blue); transform: translateY(-3px); }
-    .song-card.active { border-color: var(--cyan); background: rgba(0,212,255,0.05); }
-    .song-emoji { font-size: 34px; margin-bottom: 8px; display: block; }
-    .song-name { font-family:'Baloo 2',cursive; font-size:15px; font-weight:700; color:var(--text); }
-    .song-diff { display:flex; gap:3px; justify-content:center; margin-top:6px; }
-    .diff-star { width:8px;height:8px;border-radius:50%;background:var(--border2); }
-    .diff-star.on { background:var(--amber); }
+.metric-value{
+  font-family:'Baloo 2',cursive;
+  font-size:28px;
+  font-weight:800;
+}
 
-    .piano-stage {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin-bottom: 20px;
-    }
-    .stage-title { font-family:'Baloo 2',cursive; font-size:18px; font-weight:700; color:var(--purple); margin-bottom:4px; }
-    .stage-sub { font-size:12px; color:var(--muted); margin-bottom:20px; }
+.battery-flex{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
 
-    .all-blocks-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-    .phys-block {
-      background: var(--surface2);
-      border: 1.5px solid var(--border2);
-      border-radius: 14px;
-      padding: 14px 12px;
-    }
-    .phys-block-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
-    .phys-keys { display:flex; gap:8px; }
-    .phys-key {
-      width:52px; height:64px;
-      border-radius: 10px;
-      background: var(--bg);
-      border: 1.5px solid var(--border2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      padding-bottom: 8px;
-      gap: 5px;
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-    }
-    .phys-key.lit {
-      background: rgba(77,142,255,0.15);
-      border-color: var(--blue);
-      box-shadow: 0 0 20px rgba(77,142,255,0.25);
-    }
-    .phys-key.lit .phys-note { color: #fff; }
-    .phys-key.pressed-grey {
-      background: rgba(255,255,255,0.03);
-      border-color: #2a3550;
-    }
-    .phys-key.pressed-grey .phys-note { color: var(--muted); }
-    .phys-note { font-size:12px; font-weight:900; color:var(--muted2); transition:color 0.25s; }
-    .phys-dot { width:9px;height:9px;border-radius:50%;background:var(--border2); transition:all 0.25s; }
-    .phys-key.lit .phys-dot { background:var(--blue); box-shadow:0 0 6px var(--blue); }
-    .phys-key.pressed-grey .phys-dot { background:#2a3550; }
+.battery-shell{
+  width:74px;
+  height:34px;
+  border:2px solid #334155;
+  border-radius:8px;
+  position:relative;
+  overflow:hidden;
+  background:#060b14;
+}
 
-    .play-progress {
-      margin-top: 18px;
-      background: var(--surface2);
-      border-radius: 12px;
-      padding: 12px 16px;
-    }
-    .pp-row { display:flex; align-items:center; gap:10px; }
-    .pp-lbl { font-size:12px; color:var(--muted); font-weight:700; flex-shrink:0; }
-    .pp-track { flex:1; height:8px; background:var(--border2); border-radius:8px; overflow:hidden; }
-    .pp-fill { height:100%; background:linear-gradient(90deg,var(--purple),var(--blue)); border-radius:8px; transition:width 0.5s ease; }
-    .pp-pct { font-size:12px; font-weight:800; color:var(--text); width:36px; text-align:right; }
-    .pp-note-hint { margin-top:8px; font-size:12px; color:var(--muted); }
-    .pp-note-hint span { color:var(--cyan); font-weight:800; font-family:'Courier Prime',monospace; }
+.battery-shell::after{
+  content:'';
+  position:absolute;
+  right:-5px;
+  top:25%;
+  width:4px;
+  height:50%;
+  border-radius:2px;
+  background:#334155;
+}
 
-    .song-btns { display:flex; gap:10px; margin-top:14px; }
-    .sb {
-      padding:10px 24px;
-      border-radius:50px;
-      border: none;
-      font-family:'Baloo 2',cursive;
-      font-size:16px;
-      font-weight:700;
-      cursor:pointer;
-      transition:all 0.2s;
-    }
-    .sb:hover { transform:scale(1.04); }
-    .sb:active { transform:scale(0.97); }
-    .sb-start { background:var(--green); color:#000; }
-    .sb-reset { background:var(--red); color:#fff; }
-    .sb:disabled { opacity:0.4; cursor:default; transform:none; }
+.battery-core{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#22d67a,#00ff99);
+  transition:0.5s;
+}
 
-    /* ─── COLOUR PAGE ─── */
-    .colour-controls-card {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 22px;
-      margin-bottom: 20px;
-    }
-    .cc-title { font-family:'Baloo 2',cursive; font-size:18px; font-weight:700; color:var(--purple); margin-bottom:16px; }
-    .cc-rgb-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
-    .cc-sliders { flex:1; min-width:180px; display:flex; flex-direction:column; gap:12px; }
-    .cc-slider-row { display:flex; align-items:center; gap:10px; }
-    .cc-slider-row label { font-size:13px; font-weight:800; width:20px; }
-    .cc-slider-row.R label { color:var(--red); }
-    .cc-slider-row.G label { color:var(--green); }
-    .cc-slider-row.B label { color:var(--blue); }
-    .cc-slider-row input[type=range] { flex:1; cursor:pointer; }
-    .cc-val { font-size:12px; font-weight:700; font-family:'Courier Prime',monospace; color:var(--muted2); width:30px; text-align:right; }
-    .cc-preview-col { display:flex; flex-direction:column; align-items:center; gap:6px; }
-    .cc-swatch { width:72px; height:72px; border-radius:16px; border:2px solid var(--border2); transition:background 0.3s; }
-    .cc-hex { font-size:11px; font-family:'Courier Prime',monospace; color:var(--muted2); }
-    .cc-history { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; align-items:center; }
-    .cc-hist-dot { width:22px; height:22px; border-radius:50%; border:2px solid rgba(255,255,255,0.1); cursor:pointer; transition:transform 0.15s; }
-    .cc-hist-dot:hover { transform:scale(1.2); }
+/* =========================================================
+   DYNAMIC SNAP BUS
+========================================================= */
+.snap-assembly-line{
+  position:relative;
+  display:flex;
+  align-items:stretch;
+  gap:14px;
+  overflow-x:auto;
+  padding:34px 28px;
+  border-radius:28px;
+  background:#060b14;
+  border:2px dashed var(--border2);
+  margin-bottom:28px;
+  min-height:330px;
+}
 
-    .images-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 16px;
-    }
-    .img-card {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .img-card:hover { border-color: var(--purple); transform: translateY(-3px); }
-    .img-card.selected { border-color: var(--cyan); }
-    .img-canvas-wrap { background: #fff; padding: 12px; }
-    .img-canvas-wrap svg { width:100%; display:block; }
-    .img-footer { padding: 10px 14px; display:flex; align-items:center; justify-content:space-between; }
-    .img-name { font-family:'Baloo 2',cursive; font-size:14px; font-weight:700; }
-    .apply-btn {
-      padding: 5px 14px;
-      border-radius: 50px;
-      border: none;
-      background: var(--purple);
-      color: #fff;
-      font-family:'Nunito',sans-serif;
-      font-size:12px; font-weight:800;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .apply-btn:hover { transform:scale(1.05); }
-    .section-tags { padding:0 14px 12px; display:flex; gap:5px; flex-wrap:wrap; }
-    .sec-tag {
-      font-size:10px; font-weight:800;
-      padding:3px 9px; border-radius:50px;
-      cursor: pointer;
-      border: 1.5px solid rgba(255,255,255,0.15);
-      transition: all 0.15s;
-    }
-    .sec-tag:hover { transform:scale(1.05); }
+.hw-module-block{
+  position:relative;
+  z-index:2;
+  overflow:hidden;
+  background:var(--surface);
+  border:3px solid #1e293b;
+  border-radius:18px;
+  min-width:240px;
+  max-width:240px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
 
-    /* ─── MISC ─── */
-    .empty-note { font-size:12px; color:var(--muted); }
-    @keyframes bounceface { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
-    .face-happy { animation:bounceface 1.8s ease-in-out infinite; }
-  </style>
+.hw-module-block::after{
+  content:'';
+  position:absolute;
+  right:-10px;
+  top:50%;
+  transform:translateY(-50%);
+  width:10px;
+  height:34px;
+  border-radius:4px;
+  background:#1e293b;
+  z-index:50;
+  transition: 0.3s;
+}
+
+.hw-module-block.connected {
+  order: 1;
+  opacity: 1;
+  transform: scale(1);
+  filter: grayscale(0%) brightness(100%);
+  border-color: var(--blue);
+  box-shadow: 0 10px 25px rgba(77,142,255,0.15);
+}
+
+.hw-module-block.connected::after {
+  background: linear-gradient(to bottom, var(--cyan), var(--blue));
+  box-shadow: 0 0 10px var(--cyan);
+}
+
+.hw-module-block.disconnected {
+  order: 2;
+  opacity: 0.4;
+  transform: scale(0.92);
+  background: #0d1322;
+  filter: grayscale(80%) brightness(60%);
+  border-color: #151f33;
+}
+
+.hw-module-block.disconnected::after {
+  background: #111a2e;
+  box-shadow: none;
+}
+
+.hw-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.hw-label-title{
+  font-family:'Baloo 2',cursive;
+  font-size:16px;
+  font-weight:800;
+}
+
+.hw-preview-frame{
+  width:100%;
+  height:120px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#0b1220;
+  border-radius:14px;
+  border:1px solid var(--border);
+  margin-bottom:12px;
+}
+
+.hw-preview-frame svg{
+  width:90px;
+  height:90px;
+}
+
+.hw-foot{
+  text-align:center;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1px;
+  color:var(--muted2);
+  text-transform:uppercase;
+  margin-top:auto;
+}
+
+.piano-enclosure-row{
+  display:flex;
+  gap:4px;
+  margin-top:8px;
+}
+
+.piano-key{
+  flex:1;
+  height:44px;
+  background:white;
+  border-radius:0 0 4px 4px;
+  border:1px solid #cbd5e1;
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  padding-bottom:4px;
+  font-size:10px;
+  font-weight:900;
+  color:#64748b;
+  cursor:pointer;
+  transition:0.1s;
+}
+
+.piano-key.active{
+  background: linear-gradient(to bottom, #f1f5f9, #cbd5e1);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 0 8px var(--blue);
+  color:var(--blue);
+  transform: translateY(2px);
+}
+
+/* =========================================================
+   LABS INTERACTIVE GRID
+========================================================= */
+.labs-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 12px;
+}
+
+@media(max-width:950px){
+  .labs-container { grid-template-columns: 1fr; }
+}
+
+.lab-panel {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.lab-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.lab-title-bar h3 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 22px;
+  color: var(--text);
+}
+
+.song-menu {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.song-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.song-btn.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: white;
+}
+
+.guide-prompter {
+  background: #0b1220;
+  border-radius: 14px;
+  padding: 16px;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1px dashed var(--border2);
+  margin-bottom: 16px;
+}
+
+.notes-stream {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 16px;
+}
+
+.stream-note {
+  padding: 2px 8px;
+  background: var(--surface2);
+  border-radius: 6px;
+  color: var(--muted2);
+}
+
+.stream-note.current {
+  background: var(--amber);
+  color: #000;
+  font-weight: 700;
+  box-shadow: 0 0 10px var(--amber);
+  transform: scale(1.15);
+}
+
+.giant-piano {
+  display: flex;
+  gap: 6px;
+  background: #070b13;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+
+.giant-key {
+  flex: 1;
+  height: 140px;
+  background: white;
+  border-radius: 0 0 8px 8px;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 12px;
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  color: #475569;
+  transition: all 0.15s ease;
+}
+
+.giant-key.guided-next {
+  background: #ffe082;
+  box-shadow: 0 0 15px var(--amber);
+  animation: keyHint 1s infinite alternate;
+}
+
+@keyframes keyHint {
+  from { background: #ffe082; }
+  to { background: var(--amber); }
+}
+
+.giant-key.pressed {
+  background: linear-gradient(to bottom, #e2e8f0, #94a3b8) !important;
+  transform: translateY(4px);
+}
+
+.colour-controls-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+.cc-title { font-family:'Baloo 2',cursive; font-size:18px; font-weight:700; color:var(--purple); margin-bottom:16px; }
+.cc-rgb-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.cc-sliders { flex:1; min-width:180px; display:flex; flex-direction:column; gap:12px; }
+.cc-slider-row { display:flex; align-items:center; gap:10px; }
+.cc-slider-row label { font-size:13px; font-weight:800; width:20px; }
+.cc-slider-row.R label { color:var(--red); }
+.cc-slider-row.G label { color:var(--green); }
+.cc-slider-row.B label { color:var(--blue); }
+.cc-slider-row input[type=range] { flex:1; cursor:pointer; }
+.cc-val { font-size:12px; font-weight:700; font-family:'Courier Prime',monospace; color:var(--muted2); width:30px; text-align:right; }
+.cc-preview-col { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.cc-swatch { width:72px; height:72px; border-radius:16px; border:2px solid var(--border2); transition:background 0.3s; }
+.cc-hex { font-size:11px; font-family:'Courier Prime',monospace; color:var(--muted2); }
+
+/* =========================================================
+   INFO LAB LAYER
+========================================================= */
+.info-layout{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:22px;
+}
+
+@media(max-width:900px){
+  .info-layout{ grid-template-columns:1fr; }
+}
+
+.info-sidebar{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.info-btn{
+  border:none;
+  cursor:pointer;
+  text-align:left;
+  padding:14px 18px;
+  border-radius:14px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  color:var(--muted2);
+  font-family:'Baloo 2',cursive;
+  font-weight:800;
+  font-size:15px;
+  transition:0.25s;
+}
+
+.info-btn.active{
+  background:var(--surface2);
+  border-color:var(--cyan);
+  color:var(--cyan);
+}
+
+.info-view{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:28px;
+}
+
+.info-pane{ display:none; }
+.info-pane.active{ display:block; }
+.info-pane h3{ font-family:'Baloo 2',cursive; font-size:24px; margin-bottom:12px; }
+.info-pane p{ color:#aabbd4; line-height:1.7; margin-bottom:18px; }
+
+.flow-line-wrap{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:24px;
+}
+
+.flow-node{
+  padding:14px 18px;
+  border-radius:14px;
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  font-weight:800;
+}
+
+.flow-line{
+  width:60px;
+  height:4px;
+  border-radius:999px;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+  position:relative;
+  overflow:hidden;
+}
+
+.flow-line::after{
+  content:'';
+  position:absolute;
+  left:-20px;
+  top:0;
+  width:20px;
+  height:100%;
+  background:white;
+  animation:dataFlow 1.4s infinite linear;
+}
+
+@keyframes dataFlow{
+  from{ left:-20px; }
+  to{ left:100%; }
+}
+
+.circuit-box{
+  margin-top:20px;
+  background:#0b1220;
+  border:1px solid var(--border2);
+  border-radius:16px;
+  padding:18px;
+}
+
+.circuit-step{
+  margin-bottom:10px;
+  color:#c7d6f5;
+}
+
+.circuit-step strong{ color:var(--cyan); }
+</style>
 </head>
 <body>
 
-<!-- ═══ NAV ═══ -->
 <nav class="nav">
-  <div class="nav-logo">Electro<span>Blocks</span> <em>Studio</em></div>
+  <div class="nav-logo">
+    Electro<span>Blocks</span> <em>Studio Pro</em>
+  </div>
+
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="goPage('home',this)">🏠 Home</button>
+    <button class="nav-tab active" onclick="goPage('home',this)">🏠 Workspace</button>
     <button class="nav-tab" onclick="goPage('piano',this)">🎹 Piano</button>
     <button class="nav-tab" onclick="goPage('colour',this)">🎨 Colour</button>
+    <button class="nav-tab" onclick="goPage('info',this)">💡 Info Lab</button>
   </div>
+
   <div class="live-pill">
-    <div class="live-dot" id="live-dot"></div>
-    <span id="live-text">Connecting…</span>
+    <div class="live-dot" id="system-live-dot"></div>
+    <span id="system-live-status">Connecting…</span>
   </div>
 </nav>
 
-<!-- ═══════════════ HOME PAGE ═══════════════ -->
-<div id="page-home" class="page active">
-
-  <!-- Battery -->
-  <div class="sec-head">⚡ Battery Monitor</div>
-  <div class="battery-card" id="battery-card">
-    <div class="batt-icon-col">
-      <div class="batt-body">
-        <div class="batt-fill" id="batt-fill" style="width:0%"></div>
-        <div class="batt-pct-overlay" id="batt-overlay">--%</div>
+<div class="page active" id="page-home">
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-title">⚡ Power Core</div>
+      <div class="battery-flex">
+        <div class="battery-shell"><div class="battery-core" id="battery-core"></div></div>
+        <div class="metric-value" id="battery-value">--%</div>
       </div>
-      <div class="batt-face" id="batt-face">😊</div>
     </div>
-    <div class="batt-info">
-      <div class="batt-big" id="batt-big" style="color:var(--green)">--%</div>
-      <div class="batt-status" id="batt-status" style="color:var(--green)">Loading…</div>
-      <div class="batt-stats">
-        <div class="bst"><span class="bst-lbl">Current</span><span class="bst-val" id="bst-current">-- mA</span></div>
-        <div class="bst"><span class="bst-lbl">Used</span><span class="bst-val" id="bst-used">-- mAh</span></div>
-        <div class="bst"><span class="bst-lbl">Capacity</span><span class="bst-val">1200 mAh</span></div>
-      </div>
-      <div class="batt-tip" id="batt-tip">
-        <span id="batt-tip-icon">⏳</span>
-        <span id="batt-tip-text">Waiting for sensor…</span>
-      </div>
+    <div class="metric-card">
+      <div class="metric-title">⏱ Uptime</div>
+      <div class="metric-value" id="uptime-value" style="font-size:1.5rem;">--:--:--</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-title">🔌 Connected Blocks</div>
+      <div class="metric-value" id="module-count">0 / 8</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-title">🎵 Live Note Engine</div>
+      <div class="metric-value" id="last-note" style="color:var(--amber)">None</div>
     </div>
   </div>
 
-  <!-- Uptime -->
-  <div class="sec-head" style="margin-top:8px;">📊 System</div>
-  <div class="stat-row">
-    <div class="stat-card">
-      <div class="stat-lbl">⏱ Uptime</div>
-      <div class="stat-val" id="uptime-val" style="font-size:1.5rem;">--:--:--</div>
-      <div class="stat-sub">since ESP32 powered on</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-lbl">🔌 Blocks Online</div>
-      <div class="stat-val" id="blocks-online-val">0 / 6</div>
-      <div class="stat-sub">piano + colour blocks</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-lbl">🎵 Last Note</div>
-      <div class="stat-val" id="home-last-note" style="font-family:'Courier Prime',monospace; font-size:1.6rem; color:var(--blue);">--</div>
-      <div class="stat-sub" id="home-last-time">--</div>
-    </div>
-  </div>
-
-  <!-- Session graph -->
-  <div class="graph-card">
-    <div class="graph-title">📅 Session History</div>
-    <div class="graph-bars" id="graph-bars"></div>
-    <div style="display:flex;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:6px;">
-      <div style="font-size:10px;color:var(--muted);">Minutes of activity per day</div>
-      <div style="display:flex;gap:12px;">
-        <span style="font-size:10px;color:var(--muted);"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--blue);margin-right:4px;vertical-align:middle;"></span>Notes</span>
-        <span style="font-size:10px;color:var(--muted);"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--purple);margin-right:4px;vertical-align:middle;"></span>Colour</span>
+  <div class="sec-head">🔌 Dynamic Interlocking Modular Bus System</div>
+  
+  <div class="snap-assembly-line" id="assembly-line-bus">
+    <div class="hw-module-block disconnected" id="vis-power">
+      <div class="hw-meta"><div class="hw-label-title" style="color:var(--purple)">⚡ Power Block</div></div>
+      <div class="hw-preview-frame">
+        <svg viewBox="0 0 100 100">
+          <rect x="10" y="10" width="80" height="80" rx="18" fill="#2d1d4c" stroke="#7c3aed" stroke-width="2"/>
+          <path d="M50,28 L50,50 M36,42 A15,15 0 1,0 64,42" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+        </svg>
       </div>
-    </div>
-  </div>
-
-  <!-- Block visualizers -->
-  <div class="sec-head">🔌 Block Status</div>
-  <div class="blocks-grid">
-
-    <!-- Piano B1 -->
-    <div class="block-vis disconnected" id="vis-b1">
-      <div class="block-header">
-        <div class="block-name" style="color:var(--blue)">🎹 Piano Block 1</div>
-        <div class="conn-badge off" id="badge-b1"><div class="conn-badge-dot"></div><span>Disconnected</span></div>
-      </div>
-      <div class="piano-keys-row">
-        <div class="piano-key-vis" id="pvk-G3"><div class="key-dot"></div><span class="key-note-lbl">G3</span></div>
-        <div class="piano-key-vis" id="pvk-A3"><div class="key-dot"></div><span class="key-note-lbl">A3</span></div>
-        <div class="piano-key-vis" id="pvk-B3"><div class="key-dot"></div><span class="key-note-lbl">B3</span></div>
-      </div>
-      <div class="last-note-row">
-        <span class="last-note-lbl">Recent:</span>
-        <div class="last-note-pills" id="history-b1"><span class="empty-note">—</span></div>
-      </div>
+      <div class="hw-foot">Disconnected</div>
     </div>
 
-    <!-- Piano B2 -->
-    <div class="block-vis disconnected" id="vis-b2">
-      <div class="block-header">
-        <div class="block-name" style="color:var(--cyan)">🎹 Piano Block 2</div>
-        <div class="conn-badge off" id="badge-b2"><div class="conn-badge-dot"></div><span>Disconnected</span></div>
+    <div class="hw-module-block disconnected" id="vis-wifi">
+      <div class="hw-meta"><div class="hw-label-title" style="color:var(--cyan)">🌐 WiFi Gateway</div></div>
+      <div class="hw-preview-frame">
+        <svg viewBox="0 0 100 100">
+          <rect x="10" y="10" width="80" height="80" rx="18" fill="#151d30" stroke="#1e293b" stroke-width="2"/>
+          <path d="M25,56 A30,30 0 0,1 75,56 M35,66 A16,16 0 0,1 65,66" fill="none" stroke="#00d4ff" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="50" cy="76" r="4" fill="#00d4ff"/>
+        </svg>
       </div>
-      <div class="piano-keys-row">
-        <div class="piano-key-vis" id="pvk-C4"><div class="key-dot"></div><span class="key-note-lbl">C4</span></div>
-        <div class="piano-key-vis" id="pvk-D4"><div class="key-dot"></div><span class="key-note-lbl">D4</span></div>
-        <div class="piano-key-vis" id="pvk-E4"><div class="key-dot"></div><span class="key-note-lbl">E4</span></div>
-      </div>
-      <div class="last-note-row">
-        <span class="last-note-lbl">Recent:</span>
-        <div class="last-note-pills" id="history-b2"><span class="empty-note">—</span></div>
-      </div>
-    </div>
-    
-    <!-- Piano B3 -->
-    <div class="block-vis disconnected" id="vis-b3">
-        <div class="block-header">
-          <div class="block-name" style="color:var(--cyan)">🎹 Piano Block 3</div>
-          <div class="conn-badge off" id="badge-b3"><div class="conn-badge-dot"></div><span>Disconnected</span></div>
-        </div>
-        <div class="piano-keys-row">
-          <div class="piano-key-vis" id="pvk-F4"><div class="key-dot"></div><span class="key-note-lbl">F4</span></div>
-          <div class="piano-key-vis" id="pvk-G4"><div class="key-dot"></div><span class="key-note-lbl">G4</span></div>
-          <div class="piano-key-vis" id="pvk-A4"><div class="key-dot"></div><span class="key-note-lbl">A4</span></div>
-        </div>
-        <div class="last-note-row">
-          <span class="last-note-lbl">Recent:</span>
-          <div class="last-note-pills" id="history-b3"><span class="empty-note">—</span></div>
-        </div>
-      </div>
-
-    <!-- RGB Module -->
-    <div class="block-vis disconnected" id="vis-rgb">
-      <div class="block-header">
-        <div class="block-name" style="color:var(--purple)">🎨 RGB Module Block</div>
-        <div class="conn-badge off" id="badge-rgb"><div class="conn-badge-dot"></div><span>Disconnected</span></div>
-      </div>
-      <div class="colour-block-body">
-        <div class="rgb-sliders-vis">
-          <div class="rgb-row-vis R">
-            <span>R</span>
-            <div class="rgb-track"><div class="rgb-track-fill" id="rgb-r-bar" style="width:0%"></div></div>
-            <span class="rgb-num" id="rgb-r-num">0</span>
-          </div>
-          <div class="rgb-row-vis G">
-            <span>G</span>
-            <div class="rgb-track"><div class="rgb-track-fill" id="rgb-g-bar" style="width:0%"></div></div>
-            <span class="rgb-num" id="rgb-g-num">0</span>
-          </div>
-          <div class="rgb-row-vis B">
-            <span>B</span>
-            <div class="rgb-track"><div class="rgb-track-fill" id="rgb-b-bar" style="width:0%"></div></div>
-            <span class="rgb-num" id="rgb-b-num">0</span>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-          <div class="colour-swatch-big" id="home-swatch" style="background:rgb(0,0,0)"></div>
-          <div class="colour-hex" id="home-hex">#000000</div>
-        </div>
-      </div>
+      <div class="hw-foot">Disconnected</div>
     </div>
 
+    <div class="hw-module-block disconnected" id="vis-b1">
+      <div class="hw-meta"><div class="hw-label-title" style="color:var(--blue)">🎹 Piano Block 1</div></div>
+      <div class="hw-preview-frame">
+        <svg viewBox="0 0 100 100">
+          <rect x="8" y="8" width="84" height="84" rx="18" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+          <rect x="18" y="20" width="18" height="58" rx="3" fill="#fff"/><rect x="41" y="20" width="18" height="58" rx="3" fill="#fff"/><rect x="64" y="20" width="18" height="58" rx="3" fill="#fff"/>
+        </svg>
+      </div>
+      <div class="piano-enclosure-row">
+        <div class="piano-key" data-note="G3">G3</div>
+        <div class="piano-key" data-note="A3">A3</div>
+        <div class="piano-key" data-note="B3">B3</div>
+      </div>
+      <div class="hw-foot" style="margin-top:6px;">Disconnected</div>
+    </div>
+
+    <div class="hw-module-block disconnected" id="vis-b2">
+      <div class="hw-meta"><div class="hw-label-title" style="color:var(--cyan)">🎹 Piano Block 2</div></div>
+      <div class="hw-preview-frame">
+        <svg viewBox="0 0 100 100">
+          <rect x="8" y="8" width="84" height="84" rx="18" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+          <rect x="18" y="20" width="18" height="58" rx="3" fill="#fff"/><rect x="41" y="20" width="18" height="58" rx="3" fill="#fff"/><rect x="64" y="20" width="18" height="58" rx="3" fill="#fff"/>
+        </svg>
+      </div>
+      <div class="piano-enclosure-row">
+        <div class="piano-key" data-note="C4">C4</div>
+        <div class="piano-key" data-note="D4">D4</div>
+        <div class="piano-key" data-note="E4">E4</div>
+      </div>
+      <div class="hw-foot" style="margin-top:6px;">Disconnected</div>
+    </div>
+
+    <div class="hw-module-block disconnected" id="vis-b3">
+      <div class="hw-meta"><div class="hw-label-title" style="color:var(--cyan)">🎹 Piano Block 3</div></div>
+      <div class="hw-preview-frame">
+        <svg viewBox="0 0 100 100">
+          <rect x="8" y="8" width="84" height="84" rx="18" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+          <rect x="18" y="20" width="18" height="58" rx="3" fill="#fff"/><rect x="41" y="20" width="18" height="58" rx="3" fill="#fff"/><rect x="64" y="20" width="18" height="58" rx="3" fill="#fff"/>
+        </svg>
+      </div>
+      <div class="piano-enclosure-row">
+        <div class="piano-key" data-note="F4">F4</div>
+        <div class="piano-key" data-note="G4">G4</div>
+        <div class="piano-key" data-note="A4">A4</div>
+      </div>
+      <div class="hw-foot" style="margin-top:6px;">Disconnected</div>
+    </div>
+
+    <div class="hw-module-block disconnected" id="vis-r">
+      <div class="hw-meta"><div class="hw-label-title" style="color:var(--red)">🎨 RGB Red</div></div>
+      <div class="hw-preview-frame">
+        <svg viewBox="0 0 100 100">
+          <rect x="8" y="8" width="84" height="84" rx="18" fill="#101827" stroke="#334155" stroke-width="2"/>
+          <circle cx="50" cy="50" r="22" fill="rgb(255,79,94)"/>
+        </svg>
+      </div>
+      <div class="hw-foot">Disconnected</div>
+    </div>
+
+    <div class="hw-module-block disconnected" id="vis-g">
+      <div class="hw-meta"><div class="hw-label-title" style="color:var(--green)">🎨 RGB Green</div></div>
+      <div class="hw-preview-frame">
+        <svg viewBox="0 0 100 100">
+          <rect x="8" y="8" width="84" height="84" rx="18" fill="#101827" stroke="#334155" stroke-width="2"/>
+          <circle cx="50" cy="50" r="22" fill="rgb(34,214,122)"/>
+        </svg>
+      </div>
+      <div class="hw-foot">Disconnected</div>
+    </div>
+
+    <div class="hw-module-block disconnected" id="vis-b">
+      <div class="hw-meta"><div class="hw-label-title" style="color:var(--blue)">🎨 RGB Blue</div></div>
+      <div class="hw-preview-frame">
+        <svg viewBox="0 0 100 100">
+          <rect x="8" y="8" width="84" height="84" rx="18" fill="#101827" stroke="#334155" stroke-width="2"/>
+          <circle cx="50" cy="50" r="22" fill="rgb(77,142,255)"/>
+        </svg>
+      </div>
+      <div class="hw-foot">Disconnected</div>
+    </div>
   </div>
 </div>
 
-<!-- ═══════════════ PIANO PAGE ═══════════════ -->
 <div id="page-piano" class="page">
   <div class="sec-head">🎵 Choose a Song</div>
-  <div class="song-grid" id="song-grid"></div>
-
-  <div class="piano-stage">
-    <div class="stage-title">🎹 Piano Blocks</div>
-    <div class="stage-sub">Watch the buttons light up as you physically press them on your ElectroBlocks! Play through the song step by step.</div>
-
-    <div class="all-blocks-row" id="all-blocks-row"></div>
-
-    <div class="play-progress" id="play-progress">
-      <div class="pp-row">
-        <span class="pp-lbl">Progress</span>
-        <div class="pp-track"><div class="pp-fill" id="pp-fill" style="width:0%"></div></div>
-        <span class="pp-pct" id="pp-pct">0%</span>
-      </div>
-      <div class="pp-note-hint">Next note to press: <span id="pp-next">—</span></div>
-    </div>
-
-    <div class="song-btns">
-      <button class="sb sb-start" id="start-btn" onclick="startSong()">▶ Start</button>
-      <button class="sb sb-reset" id="reset-btn" onclick="resetSong()" style="display:none">↺ Reset</button>
-    </div>
+  <div class="song-menu">
+    <button class="song-btn active" onclick="loadSong('twinkle', this)">Twinkle Twinkle</button>
+    <button class="song-btn" onclick="loadSong('lamb', this)">Mary Had a Little Lamb</button>
+    <button class="song-btn" onclick="loadSong('boat', this)">Row Your Boat</button>
   </div>
 
-  <div class="sec-head" style="margin-top:4px;">🕒 Note History</div>
-  <div class="graph-card" style="padding:16px 20px;">
-    <div style="display:flex;flex-wrap:wrap;gap:6px;min-height:36px;align-items:center;" id="piano-note-history">
-      <span class="empty-note">No notes yet this session…</span>
+  <div class="lab-panel">
+    <div class="lab-title-bar">
+      <h3 id="song-instructions">Loading Song Game…</h3>
+    </div>
+    
+    <div class="guide-prompter">
+      <div style="font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:800;">Target Sequence</div>
+      <div class="notes-stream" id="notes-stream"></div>
+    </div>
+
+    <div class="giant-piano">
+      <div class="giant-key" id="gkey-G3" onclick="pressGiantKey('G3')">G3</div>
+      <div class="giant-key" id="gkey-A3" onclick="pressGiantKey('A3')">A3</div>
+      <div class="giant-key" id="gkey-B3" onclick="pressGiantKey('B3')">B3</div>
+      <div class="giant-key" id="gkey-C4" onclick="pressGiantKey('C4')">C4</div>
+      <div class="giant-key" id="gkey-D4" onclick="pressGiantKey('D4')">D4</div>
+      <div class="giant-key" id="gkey-E4" onclick="pressGiantKey('E4')">E4</div>
+      <div class="giant-key" id="gkey-F4" onclick="pressGiantKey('F4')">F4</div>
+      <div class="giant-key" id="gkey-G4" onclick="pressGiantKey('G4')">G4</div>
+      <div class="giant-key" id="gkey-A4" onclick="pressGiantKey('A4')">A4</div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════ COLOUR PAGE ═══════════════ -->
 <div id="page-colour" class="page">
-  <div class="sec-head">🎨 RGB Colour Block</div>
+  <div class="sec-head">🎨 RGB Colour Block Control</div>
   <div class="colour-controls-card">
-    <div class="cc-title">Live RGB Output from Block</div>
+    <div class="cc-title">Live Hardware Real-time Trackers</div>
     <div class="cc-rgb-row">
       <div class="cc-sliders">
         <div class="cc-slider-row R">
           <label>R</label>
-          <input type="range" min="0" max="255" value="255" id="cc-r" oninput="onCCSlide()">
-          <span class="cc-val" id="cc-rv">255</span>
+          <input type="range" min="0" max="255" value="0" id="cc-r" disabled>
+          <span class="cc-val" id="cc-rv">0</span>
         </div>
         <div class="cc-slider-row G">
           <label>G</label>
-          <input type="range" min="0" max="255" value="100" id="cc-g" oninput="onCCSlide()">
-          <span class="cc-val" id="cc-gv">100</span>
+          <input type="range" min="0" max="255" value="0" id="cc-g" disabled>
+          <span class="cc-val" id="cc-gv">0</span>
         </div>
         <div class="cc-slider-row B">
           <label>B</label>
-          <input type="range" min="0" max="255" value="200" id="cc-b" oninput="onCCSlide()">
-          <span class="cc-val" id="cc-bv">200</span>
+          <input type="range" min="0" max="255" value="0" id="cc-b" disabled>
+          <span class="cc-val" id="cc-bv">0</span>
         </div>
       </div>
       <div class="cc-preview-col">
-        <div class="cc-swatch" id="cc-swatch" style="background:rgb(255,100,200)"></div>
-        <div class="cc-hex" id="cc-hex">#FF64C8</div>
+        <div class="cc-swatch" id="cc-swatch" style="background:rgb(0,0,0)"></div>
+        <div class="cc-hex" id="cc-hex">#000000</div>
       </div>
     </div>
-    <div class="cc-history">
-      <span style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-right:4px;">History</span>
-      <div id="cc-history-dots"></div>
-    </div>
   </div>
-
-  <div class="sec-head">🖼 Colour an Image</div>
-  <div class="images-grid" id="images-grid"></div>
 </div>
 
-<script>
-/* ═══════════════════════════════════════════
-   FIREBASE CONFIG
-═══════════════════════════════════════════ */
-const DB = 'https://electroblocks-87beb-default-rtdb.asia-southeast1.firebasedatabase.app';
+<div class="page" id="page-info">
+  <div class="sec-head">💡 ElectroBlocks Knowledge Laboratory</div>
+  <div class="info-layout">
+    <div class="info-sidebar">
+      <button class="info-btn active" onclick="switchInfo('quick',this)">🚀 Quick Start</button>
+      <button class="info-btn" onclick="switchInfo('loop',this)">⚡ Circuit Loop</button>
+      <button class="info-btn" onclick="switchInfo('data',this)">📡 Data Transmission</button>
+      <button class="info-btn" onclick="switchInfo('wifi',this)">🌐 WiFi Synchronization</button>
+    </div>
 
-function fbGet(path) {
-  return fetch(DB + path + '.json').then(r => r.ok ? r.json() : null).catch(() => null);
-}
+    <div class="info-view">
+      <div class="info-pane active" id="info-quick">
+        <h3>ElectroBlocks Modular Learning System</h3>
+        <p>ElectroBlocks uses physically interlocked electronic modules that simulate real embedded systems architecture. Every block joins a shared power and communication bus, allowing modules to appear and disappear dynamically in the dashboard as hardware is connected.</p>
+      </div>
 
-/* ═══════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════ */
-let lastNote       = null;
-let noteHistoryAll = [];   // all notes, any block
-let histB1         = [];
-let histB2         = [];
-let histB3         = [];
-let currentSong    = null;
-let songStep       = 0;
-let songPlaying    = false;
-let colourHistory  = [];
-let sectionFills   = {};
-let selectedImage  = null;
-let liveRGB        = { r:0, g:0, b:0 };
+      <div class="info-pane" id="info-loop">
+        <h3>Circuit Loop & Current Flow</h3>
+        <p>When a piano key is pressed, the microswitch closes the electrical circuit. Current flows from the VCC rail through the switch and back into the ground return path.</p>
+        <div class="circuit-box">
+          <div class="circuit-step"><strong>1.</strong> Button pressed</div>
+          <div class="circuit-step"><strong>2.</strong> Circuit closes</div>
+          <div class="circuit-step"><strong>3.</strong> GPIO pin changes state</div>
+          <div class="circuit-step"><strong>4.</strong> ESP32 detects interrupt</div>
+          <div class="circuit-step"><strong>5.</strong> Firmware encodes note event</div>
+        </div>
+      </div>
 
-/* ═══════════════════════════════════════════
-   NAV
-═══════════════════════════════════════════ */
-function goPage(id, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  btn.classList.add('active');
-}
+      <div class="info-pane" id="info-data">
+        <h3>Real-Time Data Transmission</h3>
+        <p>ElectroBlocks transmits note and RGB data through Firebase in real time. Every hardware action becomes a live packet traveling through the network infrastructure.</p>
+        <div class="flow-line-wrap">
+          <div class="flow-node">🎹 Piano</div>
+          <div class="flow-line"></div>
+          <div class="flow-node">ESP32</div>
+          <div class="flow-line"></div>
+          <div class="flow-node">🌐 WiFi</div>
+          <div class="flow-line"></div>
+          <div class="flow-node">🔥 Firebase</div>
+          <div class="flow-line"></div>
+          <div class="flow-node">💻 Dashboard</div>
+        </div>
+      </div>
 
-/* ═══════════════════════════════════════════
-   FIREBASE POLLING
-═══════════════════════════════════════════ */
-async function poll() {
-  try {
-    const data = await fbGet('/ElectroBlocks');
+      <div class="info-pane" id="info-wifi">
+        <h3>WiFi Synchronization Layer</h3>
+        <p>The WiFi block acts as the communication gateway between the hardware modules and the web dashboard. Once the ESP32 sends JSON packets through Firebase, the browser updates the UI automatically via live listeners.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-    const dot  = document.getElementById('live-dot');
-    const ltxt = document.getElementById('live-text');
-    dot.className = 'live-dot online';
-    ltxt.textContent = 'Live';
+<script type="module">
+  // Import Firebase components
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    if (data && data.ina219) updateBattery(data.ina219);
-    
-    if (data && data.piano) {
+  // Your RTDB configurations
+  const firebaseConfig = {
+    databaseURL: "https://electroblocks-87beb-default-rtdb.asia-southeast1.firebasedatabase.app"
+  };
+
+  // Initialize Firebase App and Database instance
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  /* --- CORE APP STATE --- */
+  let lastNoteTimestamp = null;
+  const songs = {
+    twinkle: { title: "Twinkle Twinkle Little Star", notes: ['C4', 'C4', 'G3', 'G3', 'A3', 'A3', 'G3', 'F4', 'E4', 'D4', 'C4'] },
+    lamb: { title: "Mary Had a Little Lamb", notes: ['E4', 'D4', 'C4', 'D4', 'E4', 'E4', 'E4', 'D4', 'D4', 'D4', 'E4'] },
+    boat: { title: "Row, Row, Row Your Boat", notes: ['G3', 'G3', 'G3', 'A3', 'B3', 'B3', 'A3', 'B3', 'C4', 'D4'] }
+  };
+  let currentSongId = 'twinkle';
+  let songStep = 0;
+
+  // Global accessibility workaround for HTML onclick attributes
+  window.goPage = (id, btn) => {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    btn.classList.add('active');
+  };
+
+  window.switchInfo = (id, btn) => {
+    document.querySelectorAll('.info-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.info-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('info-' + id).classList.add('active');
+    btn.classList.add('active');
+  };
+
+  window.loadSong = (songKey, btn) => {
+    if(btn) {
+      document.querySelectorAll('.song-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    currentSongId = songKey;
+    songStep = 0;
+    renderSongInterface();
+  };
+
+  window.pressGiantKey = (noteName) => {
+    const keyEl = document.getElementById(`gkey-${noteName}`);
+    if (keyEl) {
+      keyEl.classList.add('pressed');
+      setTimeout(() => keyEl.classList.remove('pressed'), 150);
+    }
+    playNote(noteName);
+  };
+
+  /* --- REAL-TIME DATABASE SYNCHRONIZATION --- */
+  const dbRef = ref(db, 'ElectroBlocks');
+
+  onValue(dbRef, (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
+
+    // 1. Update Connection Health status badge
+    const liveDot = document.getElementById('system-live-dot');
+    const liveText = document.getElementById('system-live-status');
+    if (liveDot && liveText) {
+      liveDot.className = "live-dot online";
+      liveText.innerText = "Live Sandbox";
+    }
+
+    // 2. Battery Monitoring Update
+    if (data.ina219) {
+      const pct = Math.round(parseFloat(data.ina219.batteryPercentage) || 0);
+      const batteryCore = document.getElementById('battery-core');
+      const batteryValue = document.getElementById('battery-value');
+      if (batteryCore) batteryCore.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      if (batteryValue) batteryValue.innerText = pct + '%';
+    }
+
+    // 3. Central System Settings / Status updates
+    let totalConnected = 0;
+
+    if (data.piano) {
       const piano = data.piano;
-      if (piano.uptime) document.getElementById('uptime-val').textContent = piano.uptime;
+      if (piano.uptime) document.getElementById('uptime-value').innerText = piano.uptime;
 
-      updateBlockBadge('b1', piano.B1_Status);
-      updateBlockBadge('b2', piano.B2_Status);
-      updateBlockBadge('b3', piano.B3_Status);
-      
-      updateBlocksOnlineCount(piano.B1_Status, piano.B2_Status, piano.B3_Status, 
-                              data.rgb?.R_Status, data.rgb?.G_Status, data.rgb?.B_Status);
+      // Handle block layouts
+      updateBlockElementState('vis-b1', piano.B1_Status);
+      updateBlockElementState('vis-b2', piano.B2_Status);
+      updateBlockElementState('vis-b3', piano.B3_Status);
 
-      if (piano.lastNote && piano.lastNote !== lastNote) {
-        lastNote = piano.lastNote;
-        handleNewNote(lastNote, piano.lastPressedAt);
+      if (piano.B1_Status?.toLowerCase() === 'online') totalConnected++;
+      if (piano.B2_Status?.toLowerCase() === 'online') totalConnected++;
+      if (piano.B3_Status?.toLowerCase() === 'online') totalConnected++;
+
+      // Track live structural input changes
+      if (piano.lastNote && piano.lastPressedAt !== lastNoteTimestamp) {
+        lastNoteTimestamp = piano.lastPressedAt;
+        playNote(piano.lastNote);
       }
     }
 
-    if (data && data.rgb) {
-        updateColourBlock(data.rgb);
-        updateBlockBadge('rgb', 'Online'); // Overall RGB module status
+    // 4. Update the three structured RGB blocks dynamically
+    if (data.rgb) {
+      const rgb = data.rgb;
+      updateBlockElementState('vis-r', rgb.R_Status);
+      updateBlockElementState('vis-g', rgb.G_Status);
+      updateBlockElementState('vis-b', rgb.B_Status);
+
+      if (rgb.R_Status?.toLowerCase() === 'online') totalConnected++;
+      if (rgb.G_Status?.toLowerCase() === 'online') totalConnected++;
+      if (rgb.B_Status?.toLowerCase() === 'online') totalConnected++;
+
+      // Map color output telemetry safely to workspace panel controllers
+      const rVal = parseInt(rgb.R_Value ?? 0);
+      const gVal = parseInt(rgb.G_Value ?? 0);
+      const bVal = parseInt(rgb.B_Value ?? 0);
+      updateRGBInterface(rVal, gVal, bVal);
     }
 
-  } catch(e) {
-    document.getElementById('live-dot').className = 'live-dot';
-    document.getElementById('live-text').textContent = 'Offline';
-  }
-}
+    // Always keep custom fixed baseline blocks evaluated (Power + Wifi Gateways)
+    updateBlockElementState('vis-power', 'online');
+    updateBlockElementState('vis-wifi', 'online');
+    totalConnected += 2; // Adding core base modules
 
-/* ═══════════════════════════════════════════
-   BATTERY
-═══════════════════════════════════════════ */
-function updateBattery(ina) {
-  const pct     = parseFloat(ina.batteryPercentage) || 0;
-  const current = parseFloat(ina.current_mA)        || 0;
-  const used    = parseFloat(ina.capacity_mAh)      || 0;
-  const p       = Math.round(pct * 10) / 10;
-  const w       = Math.max(0, Math.min(100, pct));
+    // Update global aggregate metric display
+    document.getElementById('module-count').innerText = `${totalConnected} / 8`;
 
-  document.getElementById('batt-fill').style.width = w + '%';
-  document.getElementById('batt-overlay').textContent = p + '%';
-  document.getElementById('batt-big').textContent     = p + '%';
-  document.getElementById('bst-current').textContent  = current.toFixed(1) + ' mA';
-  document.getElementById('bst-used').textContent     = used.toFixed(2) + ' mAh';
-
-  let color, face, faceClass, statusTxt, tipBg, tipColor, tipIcon, tipTxt, cardClass, fillColor;
-
-  if (pct > 60) {
-    color='var(--green)'; face='😊'; faceClass='face-happy';
-    statusTxt='All good! 🎉'; tipBg='rgba(34,214,122,0.08)'; tipColor='var(--green)';
-    tipIcon='✅'; tipTxt='Battery is healthy! Keep playing!';
-    cardClass='level-high'; fillColor='var(--green)';
-  } else if (pct > 30) {
-    color='var(--amber)'; face='😐'; faceClass='';
-    statusTxt='Getting there…'; tipBg='rgba(255,184,48,0.08)'; tipColor='var(--amber)';
-    tipIcon='⚠️'; tipTxt='Battery is half full. Maybe charge soon?';
-    cardClass='level-mid'; fillColor='var(--amber)';
-  } else if (pct > 10) {
-    color='var(--red)'; face='😟'; faceClass='';
-    statusTxt='Low battery!'; tipBg='rgba(255,79,94,0.08)'; tipColor='var(--red)';
-    tipIcon='🔴'; tipTxt='Battery is low! Please charge soon!';
-    cardClass='level-low'; fillColor='var(--red)';
-  } else {
-    color='var(--red)'; face='😱'; faceClass='batt-critical';
-    statusTxt='Almost empty!!'; tipBg='rgba(255,79,94,0.12)'; tipColor='var(--red)';
-    tipIcon='🚨'; tipTxt='CHARGE NOW! Battery is almost dead!';
-    cardClass='level-low'; fillColor='var(--red)';
-  }
-
-  const bigPct = document.getElementById('batt-big');
-  bigPct.style.color = color;
-  document.getElementById('batt-status').textContent = statusTxt;
-  document.getElementById('batt-status').style.color = color;
-  const faceEl = document.getElementById('batt-face');
-  faceEl.textContent = face; faceEl.className = 'batt-face ' + faceClass;
-  document.getElementById('batt-fill').style.background = fillColor;
-  const tip = document.getElementById('batt-tip');
-  tip.style.background = tipBg; tip.style.color = tipColor;
-  document.getElementById('batt-tip-icon').textContent = tipIcon;
-  document.getElementById('batt-tip-text').textContent = tipTxt;
-  document.getElementById('battery-card').className = 'battery-card ' + cardClass;
-}
-
-/* ═══════════════════════════════════════════
-   BLOCK BADGE
-═══════════════════════════════════════════ */
-function updateBlockBadge(id, status) {
-  const isOn = status && status.toLowerCase() === 'online';
-  const vis   = document.getElementById('vis-'+id);
-  const badge = document.getElementById('badge-'+id);
-  if(!vis || !badge) return;
-  vis.className   = 'block-vis ' + (isOn ? 'connected' : 'disconnected');
-  badge.className = 'conn-badge ' + (isOn ? 'on' : 'off');
-  badge.querySelector('span').textContent = isOn ? 'Connected' : 'Disconnected';
-}
-
-function updateBlocksOnlineCount(b1, b2, b3, r, g, b) {
-  let count = 0;
-  if (b1?.toLowerCase() === 'online') count++;
-  if (b2?.toLowerCase() === 'online') count++;
-  if (b3?.toLowerCase() === 'online') count++;
-  if (r?.toLowerCase() === 'online') count++;
-  if (g?.toLowerCase() === 'online') count++;
-  if (b?.toLowerCase() === 'online') count++;
-  document.getElementById('blocks-online-val').textContent = count + ' / 6';
-}
-
-/* ═══════════════════════════════════════════
-   NOTE HANDLING
-═══════════════════════════════════════════ */
-const NOTE_TO_BLOCK = {
-  G3:'b1', A3:'b1', B3:'b1',
-  C4:'b2', D4:'b2', E4:'b2',
-  F4:'b3', G4:'b3', A4:'b3'
-};
-
-function handleNewNote(note, pressedAt) {
-  document.getElementById('home-last-note').textContent = note;
-  const t = pressedAt ? new Date(pressedAt).toLocaleTimeString() : new Date().toLocaleTimeString();
-  document.getElementById('home-last-time').textContent = t;
-
-  flashHomeKey(note);
-
-  const blk = NOTE_TO_BLOCK[note];
-  if (blk === 'b1') {
-    histB1.unshift(note);
-    if (histB1.length > 5) histB1.pop();
-    renderMiniHistory('history-b1', histB1);
-  } else if (blk === 'b2') {
-    histB2.unshift(note);
-    if (histB2.length > 5) histB2.pop();
-    renderMiniHistory('history-b2', histB2);
-  } else if (blk === 'b3') {
-    histB3.unshift(note);
-    if (histB3.length > 5) histB3.pop();
-    renderMiniHistory('history-b3', histB3);
-  }
-
-  noteHistoryAll.unshift(note);
-  if (noteHistoryAll.length > 20) noteHistoryAll.pop();
-  renderPianoNoteHistory();
-
-  if (songPlaying && currentSong) {
-    advanceSongStep(note);
-  }
-}
-
-function flashHomeKey(note) {
-  const el = document.getElementById('pvk-'+note);
-  if (!el) return;
-  el.classList.add('pressed');
-  const ripple = document.createElement('div');
-  ripple.className = 'key-ripple';
-  el.appendChild(ripple);
-  setTimeout(() => { ripple.remove(); el.classList.remove('pressed'); }, 600);
-}
-
-function renderMiniHistory(containerId, arr) {
-  const el = document.getElementById(containerId);
-  if (!arr.length) { el.innerHTML = '<span class="empty-note">—</span>'; return; }
-  el.innerHTML = arr.map(n => `<span class="note-pill">${n}</span>`).join('');
-}
-
-/* ═══════════════════════════════════════════
-   COLOUR BLOCK
-═══════════════════════════════════════════ */
-function updateColourBlock(data) {
-  const r = parseInt(data.R_Value ?? 0);
-  const g = parseInt(data.G_Value ?? 0);
-  const b = parseInt(data.B_Value ?? 0);
-  liveRGB = { r, g, b };
-
-  const hex = toHex(r,g,b);
-  const rgb = `rgb(${r},${g},${b})`;
-
-  document.getElementById('rgb-r-bar').style.width = (r/255*100)+'%';
-  document.getElementById('rgb-g-bar').style.width = (g/255*100)+'%';
-  document.getElementById('rgb-b-bar').style.width = (b/255*100)+'%';
-  document.getElementById('rgb-r-num').textContent = r;
-  document.getElementById('rgb-g-num').textContent = g;
-  document.getElementById('rgb-b-num').textContent = b;
-  document.getElementById('home-swatch').style.background = rgb;
-  document.getElementById('home-hex').textContent = hex;
-
-  document.getElementById('cc-r').value = r;
-  document.getElementById('cc-g').value = g;
-  document.getElementById('cc-b').value = b;
-  document.getElementById('cc-rv').textContent = r;
-  document.getElementById('cc-gv').textContent = g;
-  document.getElementById('cc-bv').textContent = b;
-  document.getElementById('cc-swatch').style.background = rgb;
-  document.getElementById('cc-hex').textContent = hex;
-}
-
-function toHex(r,g,b) {
-  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0').toUpperCase()).join('');
-}
-
-/* ═══════════════════════════════════════════
-   SESSION GRAPH
-═══════════════════════════════════════════ */
-function buildGraph() {
-  const sessions = [
-    { d:'Mon', notes:3, colour:2 },
-    { d:'Tue', notes:8, colour:5 },
-    { d:'Wed', notes:2, colour:0 },
-    { d:'Thu', notes:12, colour:7 },
-    { d:'Fri', notes:5, colour:3 },
-    { d:'Sat', notes:1, colour:1 },
-    { d:'Today', notes: noteHistoryAll.length, colour: colourHistory.length, today:true },
-  ];
-  const maxN = Math.max(...sessions.map(s=>s.notes), 1);
-  const maxC = Math.max(...sessions.map(s=>s.colour), 1);
-  const maxAll = Math.max(maxN, maxC);
-  const el = document.getElementById('graph-bars');
-  el.innerHTML = '';
-  sessions.forEach(s => {
-    const hn = Math.round((s.notes / maxAll) * 100);
-    const hc = Math.round((s.colour / maxAll) * 100);
-    const w  = document.createElement('div');
-    w.className = 'gbar-wrap';
-    w.innerHTML = `
-      <div style="position:relative;display:flex;gap:4px;align-items:flex-end;height:110px;">
-        <div class="gbar" style="flex:1;height:${hn}px;background:${s.today?'var(--blue)':'rgba(77,142,255,0.3)'};">
-          ${s.notes>0?`<span class="gbar-val">${s.notes}</span>`:''}
-        </div>
-        <div class="gbar" style="flex:1;height:${hc}px;background:${s.today?'var(--purple)':'rgba(157,107,255,0.3)'};">
-        </div>
-      </div>
-      <div class="gbar-lbl">${s.d}</div>`;
-    el.appendChild(w);
+  }, (error) => {
+    console.error("Firebase network hook error: ", error);
+    document.getElementById('system-live-dot').className = 'live-dot';
+    document.getElementById('system-live-status').innerText = 'Offline';
   });
-}
 
-/* ═══════════════════════════════════════════
-   PIANO PAGE
-═══════════════════════════════════════════ */
-const SONGS = [
-  { id:'hb',     name:'Happy Birthday', emoji:'🎂', diff:3, notes:['C4','C4','D4','C4','F4','E4'] },
-  { id:'jb',     name:'Jingle Bells',   emoji:'🎄', diff:2, notes:['E4','E4','E4','E4','E4','E4','E4','G4','C4','D4','E4'] },
-  { id:'mary',   name:'Mary Had a Lamb', emoji:'🐑', diff:1, notes:['E4','D4','C4','D4','E4','E4','E4'] },
-];
+  /* --- UI COMPONENT MODIFIERS --- */
+  function updateBlockElementState(elementId, status) {
+    const block = document.getElementById(elementId);
+    if (!block) return;
+    
+    const isOnline = status && status.toLowerCase() === 'online';
+    const footLabel = block.querySelector('.hw-foot');
 
-const BLOCKS_DEF = [
-  { label:'Block 1', notes:['G3','A3','B3'] },
-  { label:'Block 2', notes:['C4','D4','E4'] },
-  { label:'Block 3', notes:['F4','G4','A4'] },
-];
+    if (isOnline) {
+      block.classList.remove('disconnected');
+      block.classList.add('connected');
+      if (footLabel && elementId !== 'vis-power' && elementId !== 'vis-wifi') {
+        footLabel.innerText = "CONNECTED";
+      } else if (elementId === 'vis-power') {
+        footLabel.innerText = "VCC MASTER RAIL";
+      } else if (elementId === 'vis-wifi') {
+        footLabel.innerText = "CLOUD GATEWAY";
+      }
+    } else {
+      block.classList.remove('connected');
+      block.classList.add('disconnected');
+      if (footLabel) footLabel.innerText = "DISCONNECTED";
+    }
+  }
 
-function buildSongGrid() {
-  const el = document.getElementById('song-grid');
-  SONGS.forEach(s => {
-    const d = document.createElement('div');
-    d.className = 'song-card' + (currentSong && currentSong.id === s.id ? ' active' : '');
-    d.innerHTML = `<span class="song-emoji">${s.emoji}</span><div class="song-name">${s.name}</div>
-      <div class="song-diff">${[1,2,3].map(i=>`<div class="diff-star${i<=s.diff?' on':''}"></div>`).join('')}</div>`;
-    d.onclick = () => selectSong(s);
-    el.appendChild(d);
-  });
-}
+  function updateRGBInterface(r, g, b) {
+    document.getElementById('cc-r').value = r;
+    document.getElementById('cc-g').value = g;
+    document.getElementById('cc-b').value = b;
+    document.getElementById('cc-rv').innerText = r;
+    document.getElementById('cc-gv').innerText = g;
+    document.getElementById('cc-bv').innerText = b;
 
-function selectSong(s) {
-  currentSong = s;
-  songStep = 0; songPlaying = false;
-  document.querySelectorAll('.song-card').forEach((c,i)=>c.classList.toggle('active', SONGS[i].id===s.id));
-  document.getElementById('start-btn').style.display = 'inline-block';
-  document.getElementById('start-btn').disabled = false;
-  document.getElementById('reset-btn').style.display = 'none';
-  updateProgressUI(0, s.notes.length);
-  document.getElementById('pp-next').textContent = '—';
-  renderAllBlocks();
-}
+    const hex = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0').toUpperCase()).join('');
+    document.getElementById('cc-swatch').style.background = `rgb(${r},${g},${b})`;
+    document.getElementById('cc-hex').innerText = hex;
+  }
 
-function renderAllBlocks() {
-  const el = document.getElementById('all-blocks-row');
-  el.innerHTML = '';
-  BLOCKS_DEF.forEach(blk => {
-    const bDiv = document.createElement('div');
-    bDiv.className = 'phys-block';
-    bDiv.innerHTML = `<div class="phys-block-label">${blk.label}</div><div class="phys-keys" id="phys-${blk.label.replace(' ','')}"></div>`;
-    el.appendChild(bDiv);
-    const row = bDiv.querySelector('.phys-keys');
-    blk.notes.forEach(note => {
-      const isNext  = songPlaying && currentSong && currentSong.notes[songStep] === note;
-      const k = document.createElement('div');
-      k.className = 'phys-key' + (isNext?' lit':'');
-      k.id = 'pk-'+note;
-      k.innerHTML = `<div class="phys-dot"></div><span class="phys-note">${note}</span>`;
-      row.appendChild(k);
+  function playNote(noteName) {
+    const liveNoteDisplay = document.getElementById('last-note');
+    if (liveNoteDisplay) liveNoteDisplay.innerText = noteName;
+    
+    // Flash keys inside the Workspace blocks matching the current note
+    document.querySelectorAll('.piano-key').forEach(k => {
+      if(k.getAttribute('data-note') === noteName) {
+        k.classList.add('active');
+        setTimeout(() => k.classList.remove('active'), 200);
+      }
     });
-  });
-}
 
-function startSong() {
-  if (!currentSong) return;
-  songPlaying = true; songStep = 0;
-  document.getElementById('start-btn').style.display = 'none';
-  document.getElementById('reset-btn').style.display = 'inline-block';
-  updateProgressUI(0, currentSong.notes.length);
-  document.getElementById('pp-next').textContent = currentSong.notes[0];
-  highlightNextKey();
-}
-
-function advanceSongStep(note) {
-  if (!songPlaying || !currentSong) return;
-  if (currentSong.notes[songStep] !== note) return;
-  songStep++;
-  const total = currentSong.notes.length;
-  updateProgressUI(songStep, total);
-  if (songStep >= total) {
-    songPlaying = false;
-    document.getElementById('pp-next').textContent = '🎉 Done!';
-    renderAllBlocks();
-  } else {
-    document.getElementById('pp-next').textContent = currentSong.notes[songStep];
-    highlightNextKey();
+    // Handle song progress tracking logic
+    const targetNote = songs[currentSongId].notes[songStep];
+    if(noteName === targetNote) {
+      songStep++;
+      if(songStep >= songs[currentSongId].notes.length) {
+        alert("🎉 Spectacular! You finished the song! Let's play it again!");
+        songStep = 0;
+      }
+      renderSongInterface();
+    }
   }
-}
 
-function highlightNextKey() {
-  if (!currentSong) return;
-  BLOCKS_DEF.forEach(blk => blk.notes.forEach(note => {
-    const el = document.getElementById('pk-'+note);
-    if (!el) return;
-    el.className = 'phys-key' + (currentSong.notes[songStep]===note ? ' lit' : '');
-  }));
-}
-
-function updateProgressUI(step, total) {
-  const pct = total ? Math.round(step/total*100) : 0;
-  document.getElementById('pp-fill').style.width = pct+'%';
-  document.getElementById('pp-pct').textContent  = pct+'%';
-}
-
-function resetSong() {
-  songPlaying = false; songStep = 0;
-  document.getElementById('start-btn').style.display = 'inline-block';
-  document.getElementById('start-btn').disabled = false;
-  document.getElementById('reset-btn').style.display = 'none';
-  document.getElementById('pp-next').textContent = '—';
-  updateProgressUI(0, currentSong ? currentSong.notes.length : 1);
-  renderAllBlocks();
-}
-
-function renderPianoNoteHistory() {
-  const el = document.getElementById('piano-note-history');
-  if (!noteHistoryAll.length) { el.innerHTML = '<span class="empty-note">No notes yet this session…</span>'; return; }
-  const colors = {'G3':'var(--blue)','A3':'var(--cyan)','B3':'var(--green)','C4':'var(--amber)','D4':'var(--purple)','E4':'var(--pink)','F4':'var(--red)','G4':'var(--blue)','A4':'var(--cyan)'};
-  el.innerHTML = noteHistoryAll.map(n=>`<span class="note-pill" style="background:rgba(77,142,255,0.12);color:${colors[n]||'var(--blue)'}">${n}</span>`).join('');
-}
-
-/* ═══════════════════════════════════════════
-   COLOUR PAGE
-═══════════════════════════════════════════ */
-const IMAGES = [
-  { id:'sun', name:'Sunny Day', sections:[
-    {id:'sky',   path:'M0,0 h180 v90 Q90,115 0,90 Z',                              fill:'#87CEEB'},
-    {id:'sun',   cx:90, cy:45, r:28, fill:'#FFD700', type:'circle'},
-    {id:'cloud', path:'M40,55 Q50,38 65,48 Q70,32 88,40 Q98,28 110,40 Q122,34 118,52 Q126,56 120,63 Q100,68 80,65 Q58,68 40,62 Z', fill:'#fff'},
-    {id:'grass', path:'M0,90 Q90,115 180,90 v110 h-180 Z',                         fill:'#90EE90'},
-  ]},
-  { id:'rocket', name:'Space Rocket', sections:[
-    {id:'space', path:'M0,0 h180 v200 h-180 Z',  fill:'#1a1a2e'},
-    {id:'body',  path:'M80,160 L90,28 L100,160 Z', fill:'#ddd'},
-    {id:'wingL', path:'M80,160 L58,188 L80,175 Z', fill:'#ff6b6b'},
-    {id:'wingR', path:'M100,160 L122,188 L100,175 Z', fill:'#ff6b6b'},
-    {id:'window',cx:90, cy:108, r:13, fill:'#4d8eff', type:'circle'},
-    {id:'flame', path:'M83,163 Q90,196 97,163 Q90,176 83,163 Z', fill:'#ffd93d'},
-  ]},
-  { id:'flower', name:'Garden Flower', sections:[
-    {id:'bg',     path:'M0,0 h180 v200 h-180 Z', fill:'#e8f5e9'},
-    {id:'stem',   path:'M86,118 L94,118 L94,192 L86,192 Z', fill:'#4CAF50'},
-    {id:'leaf',   path:'M94,158 Q122,147 118,168 Q106,178 94,167 Z', fill:'#66BB6A'},
-    {id:'p1',     cx:90, cy:73, r:23, fill:'#f48fb1', type:'circle'},
-    {id:'p2',     cx:66, cy:90, r:19, fill:'#f48fb1', type:'circle'},
-    {id:'p3',     cx:114,cy:90, r:19, fill:'#f48fb1', type:'circle'},
-    {id:'centre', cx:90, cy:94, r:14, fill:'#FFD700', type:'circle'},
-  ]},
-  { id:'house', name:'My House', sections:[
-    {id:'sky',    path:'M0,0 h180 v200 h-180 Z',      fill:'#87CEEB'},
-    {id:'ground', path:'M0,162 h180 v38 h-180 Z',     fill:'#90EE90'},
-    {id:'wall',   path:'M33,97 h114 v65 h-114 Z',     fill:'#FFF9C4'},
-    {id:'roof',   path:'M18,102 L90,33 L162,102 Z',   fill:'#ff6b6b'},
-    {id:'door',   path:'M77,135 h26 v27 h-26 Z',      fill:'#8B4513'},
-    {id:'winL',   path:'M44,112 h26 v22 h-26 Z',      fill:'#4d8eff'},
-    {id:'winR',   path:'M110,112 h26 v22 h-26 Z',     fill:'#4d8eff'},
-    {id:'chimney',path:'M106,60 h20 v40 h-20 Z',      fill:'#9E9E9E'},
-  ]},
-];
-
-function buildImagesGrid() {
-  selectedImage = IMAGES[0];
-  const el = document.getElementById('images-grid');
-  IMAGES.forEach(img => {
-    const card = document.createElement('div');
-    card.className = 'img-card' + (img.id===selectedImage.id?' selected':'');
-    card.id = 'imgcard-'+img.id;
-    card.innerHTML = `
-      <div class="img-canvas-wrap">
-        <svg id="imgsvg-${img.id}" viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">${renderSVG(img)}</svg>
-      </div>
-      <div class="img-footer">
-        <span class="img-name">${img.name}</span>
-        <button class="apply-btn" onclick="applyColourAll('${img.id}')">Fill All</button>
-      </div>
-      <div class="section-tags">${img.sections.map(s=>`<span class="sec-tag" id="stag-${img.id}-${s.id}" style="background:${sectionFills[img.id+':'+s.id]||s.fill};color:#000;" onclick="applyColourSection('${img.id}','${s.id}')">${s.id}</span>`).join('')}</div>`;
-    card.onclick = e => { if(e.target.tagName!=='BUTTON'&&e.target.tagName!=='SPAN') selectImage(img.id); };
-    el.appendChild(card);
-  });
-}
-
-function renderSVG(img) {
-  return img.sections.map(s => {
-    const fill = sectionFills[img.id+':'+s.id] || s.fill;
-    if (s.type==='circle') return `<circle cx="${s.cx}" cy="${s.cy}" r="${s.r}" fill="${fill}" stroke="#fff" stroke-width="1"/>`;
-    return `<path d="${s.path}" fill="${fill}" stroke="#fff" stroke-width="0.5"/>`;
-  }).join('');
-}
-
-function refreshSVG(imgId) {
-  const img = IMAGES.find(i=>i.id===imgId);
-  if (!img) return;
-  const svgEl = document.getElementById('imgsvg-'+imgId);
-  if (svgEl) svgEl.innerHTML = renderSVG(img);
-  img.sections.forEach(s => {
-    const tag = document.getElementById('stag-'+imgId+'-'+s.id);
-    if (tag) tag.style.background = sectionFills[imgId+':'+s.id] || s.fill;
-  });
-}
-
-function selectImage(id) {
-  selectedImage = IMAGES.find(i=>i.id===id);
-  document.querySelectorAll('.img-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('imgcard-'+id).classList.add('selected');
-}
-
-function applyColourSection(imgId, secId) {
-  const hex = toHex(liveRGB.r, liveRGB.g, liveRGB.b);
-  sectionFills[imgId+':'+secId] = hex;
-  addHistoryDot(hex);
-  refreshSVG(imgId);
-}
-
-function applyColourAll(imgId) {
-  const img = IMAGES.find(i=>i.id===imgId);
-  if (!img) return;
-  const hex = toHex(liveRGB.r, liveRGB.g, liveRGB.b);
-  img.sections.forEach(s => { sectionFills[imgId+':'+s.id] = hex; });
-  addHistoryDot(hex);
-  refreshSVG(imgId);
-}
-
-function addHistoryDot(hex) {
-  if (!colourHistory.includes(hex)) {
-    colourHistory.unshift(hex);
-    if (colourHistory.length > 14) colourHistory.pop();
-    const el = document.getElementById('cc-history-dots');
-    el.innerHTML = colourHistory.map(c=>`<div class="cc-hist-dot" style="background:${c}" title="${c}" onclick="applyHistColour('${c}')"></div>`).join('');
+  function renderSongInterface() {
+    const song = songs[currentSongId];
+    document.getElementById('song-instructions').innerText = `Playing: ${song.title} - Step ${songStep + 1} of ${song.notes.length}`;
+    
+    const streamContainer = document.getElementById('notes-stream');
+    if (!streamContainer) return;
+    streamContainer.innerHTML = '';
+    
+    song.notes.forEach((note, index) => {
+      const span = document.createElement('span');
+      span.classList.add('stream-note');
+      if(index === songStep) span.classList.add('current');
+      span.innerText = note;
+      streamContainer.appendChild(span);
+    });
+    
+    // Update target guide keys highlighted states on execution runtime
+    document.querySelectorAll('.giant-key').forEach(k => k.classList.remove('guided-next'));
+    const currentTargetNote = song.notes[songStep];
+    const targetKeyElement = document.getElementById(`gkey-${currentTargetNote}`);
+    if(targetKeyElement) targetKeyElement.classList.add('guided-next');
   }
-}
 
-function applyHistColour(hex) {
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
-  liveRGB = {r,g,b};
-  updateColourBlock({r,g,b});
-}
-
-function onCCSlide() {
-  const r = +document.getElementById('cc-r').value;
-  const g = +document.getElementById('cc-g').value;
-  const b = +document.getElementById('cc-b').value;
-  liveRGB = {r,g,b};
-  document.getElementById('cc-rv').textContent = r;
-  document.getElementById('cc-gv').textContent = g;
-  document.getElementById('cc-bv').textContent = b;
-  const hex = toHex(r,g,b);
-  document.getElementById('cc-swatch').style.background = `rgb(${r},${g},${b})`;
-  document.getElementById('cc-hex').textContent = hex;
-}
-
-/* ═══════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════ */
-buildGraph();
-buildSongGrid();
-buildImagesGrid();
-selectSong(SONGS[0]);
-
-poll();
-setInterval(poll, 2500);
-setInterval(buildGraph, 15000);
+  // Initial Boot Assembly
+  window.loadSong('twinkle');
 </script>
 </body>
 </html>
