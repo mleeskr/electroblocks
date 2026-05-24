@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ElectroBlocks Very the Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+
+<style>
+/* =========================================================
+   ELECTROBLOCKS — KIDS EMBEDDED SYSTEMS LAB THEME
+========================================================= */
+:root {
+  --bg-void:    #030509;
+  --bg-base:    #080d18;
+  --bg-card:    #0d1425;
+  --bg-raised:  #131d35;
+
+  --c-power:   #c084fc;
+  --c-wifi:    #22d3ee;
+  --c-piano:   #60a5fa;
+  --c-rgb:     #34d399;
+  --c-warn:    #fbbf24;
+  --c-danger:  #f87171;
+
+  --border:    #1e2d50;
+  --border-lit:#2a4075;
+
+  --text:      #f0f6ff;
+  --text-dim:  #6b81a8;
+  --text-mid:  #8faac8;
+
+  --ff-display: 'Orbitron', sans-serif;
+  --ff-body:    'Nunito', sans-serif;
+  --ff-mono:    'Share Tech Mono', monospace;
+
+  --r-card:    18px;
+  --r-pill:    999px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-void);
+  color: var(--text);
+  font-family: var(--ff-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* dot grid */
+  background-image: radial-gradient(circle, rgba(34,211,238,0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Ambient glow blobs */
+body::before, body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(120px);
+}
+body::before {
+  width: 600px; height: 600px;
+  top: -200px; left: -150px;
+  background: radial-gradient(circle, rgba(96,165,250,0.07), transparent 70%);
+}
+body::after {
+  width: 500px; height: 500px;
+  bottom: -150px; right: -100px;
+  background: radial-gradient(circle, rgba(52,211,153,0.06), transparent 70%);
+}
+
+/* =========================================================  NAV */
+.nav {
+  position: sticky; top: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+  background: rgba(3,5,9,0.88);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--ff-display);
+  font-size: 18px; font-weight: 700;
+  letter-spacing: 1px;
+}
+.nav-brand .logo-star {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg,#c084fc,#60a5fa);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 20px rgba(192,132,252,0.35);
+}
+.nav-brand .logo-text { background: linear-gradient(90deg,#c084fc,#22d3ee); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.nav-brand .logo-sub { font-size:10px; font-family:var(--ff-mono); color:var(--text-dim); border:1px solid var(--border); padding:2px 6px; border-radius:4px; }
+
+.nav-tabs {
+  display: flex; background: var(--bg-card);
+  padding: 4px; border-radius: var(--r-pill);
+  border: 1px solid var(--border); gap: 2px;
+}
+.nav-tab {
+  border: none; background: transparent;
+  color: var(--text-dim); font-family: var(--ff-body);
+  font-weight: 700; font-size: 13px;
+  padding: 8px 18px; border-radius: var(--r-pill);
+  cursor: pointer; transition: all 0.3s ease;
+}
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { background: linear-gradient(135deg,#1d4ed8,#0891b2); color:#fff; box-shadow: 0 4px 14px rgba(29,78,216,0.4); }
+
+.status-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  font-family: var(--ff-mono); font-size: 11px; color: var(--text-dim);
+}
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--c-danger); transition: all 0.4s;
+}
+.status-dot.alive { background: var(--c-rgb); box-shadow: 0 0 10px var(--c-rgb); animation: dotPulse 2s infinite; }
+@keyframes dotPulse { 0%,100%{box-shadow:0 0 8px var(--c-rgb);} 50%{box-shadow:0 0 18px var(--c-rgb),0 0 30px rgba(52,211,153,0.3);} }
+
+/* =========================================================  PAGES */
+.page { display: none; max-width: 1480px; margin: 0 auto; padding: 28px 32px; position: relative; z-index: 1; }
+.page.active { display: block; animation: pageFade 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+@keyframes pageFade { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+.sec-head {
+  font-family: var(--ff-display);
+  font-size: 20px; font-weight: 700; letter-spacing: 1px;
+  margin-bottom: 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.sec-head::after { content:''; flex:1; height:1px; background: linear-gradient(90deg, var(--border-lit), transparent); }
+
+/* =========================================================  HOME — METRICS */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.metric-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  padding: 20px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s, transform 0.2s;
+}
+.metric-card:hover { transform: translateY(-2px); border-color: var(--border-lit); }
+.metric-card::before {
+  content:''; position:absolute;
+  top:0; left:0; width:3px; height:100%;
+  background: var(--accent-bar, var(--border));
+}
+.metric-card.pwr { --accent-bar: var(--c-power); }
+.metric-card.net { --accent-bar: var(--c-wifi); }
+.metric-card.note{ --accent-bar: var(--c-piano); }
+.metric-card.rgb { --accent-bar: var(--c-rgb); }
+
+.metric-label { font-family:var(--ff-mono); font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--text-dim); margin-bottom:10px; }
+.metric-val { font-family:var(--ff-display); font-size:28px; font-weight:700; }
+.metric-unit { font-size:13px; color:var(--text-dim); font-weight:600; margin-left:4px; }
+
+/* battery */
+.bat-wrap { display:flex; align-items:center; gap:12px; }
+.bat-body {
+  width:60px; height:26px;
+  border:2px solid var(--border-lit);
+  border-radius:5px; padding:3px;
+  position:relative; flex-shrink:0;
+}
+.bat-body::after {
+  content:''; position:absolute;
+  right:-6px; top:7px; width:4px; height:10px;
+  background:var(--border-lit); border-radius:0 3px 3px 0;
+}
+.bat-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#34d399,#22d3ee); transition:width 0.8s cubic-bezier(0.34,1.56,0.64,1); }
+
+/* activity feed */
+.activity-feed {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  padding: 20px;
+}
+.activity-feed h4 { font-family:var(--ff-display); font-size:13px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
+.feed-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  font-size:13px; color:var(--text-mid);
+  animation: feedSlide 0.3s ease;
+}
+@keyframes feedSlide { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+.feed-item:last-child { border-bottom:none; }
+.feed-dot { width:7px; height:7px; border-radius:50%; margin-top:4px; flex-shrink:0; }
+.feed-time { font-family:var(--ff-mono); font-size:10px; color:var(--text-dim); flex-shrink:0; }
+
+/* rgb preview swatch on home */
+.swatch-preview {
+  width:56px; height:56px; border-radius:12px;
+  border:2px solid var(--border);
+  background:#000;
+  transition: background 0.4s, box-shadow 0.4s;
+}
+
+/* last-note big display */
+.last-note-big {
+  font-family:var(--ff-display);
+  font-size:40px; font-weight:900;
+  color:var(--c-warn);
+  text-shadow: 0 0 24px rgba(251,191,36,0.5);
+  transition: all 0.2s;
+}
+.last-note-big.flash { animation: noteFlash 0.25s ease; }
+@keyframes noteFlash { 0%{transform:scale(1.3);color:#fff} 100%{transform:scale(1)} }
+
+.home-bottom-grid { display:grid; grid-template-columns:1fr 1fr 2fr; gap:16px; margin-top:0; }
+@media(max-width:1100px){ .home-bottom-grid{grid-template-columns:1fr 1fr;} }
+@media(max-width:700px){ .home-bottom-grid{grid-template-columns:1fr;} }
+
+/* =========================================================  SNAP BUS */
+.bus-zone {
+  background: #030509;
+  border: 1px dashed var(--border-lit);
+  border-radius: 24px;
+  padding: 40px 28px;
+  margin-bottom: 32px;
+  overflow-x: auto;
+}
+.bus-track {
+  display: flex;
+  align-items: center;
+  gap: 42px;
+  min-width: max-content;
+  margin: 0 auto;
+}
+
+/* module block */
+.twin-node {
+  position: relative;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--r-card);
+  width: 230px; padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  flex-shrink: 0;
+  /* dynamic order layouts */
+  transition:
+    opacity 0.55s cubic-bezier(0.34,1.56,0.64,1),
+    transform 0.55s cubic-bezier(0.34,1.56,0.64,1),
+    border-color 0.3s;
+  will-change: opacity, transform;
+}
+
+/* --- AUTOMATED SORTING RULES --- */
+.twin-node.alive {
+  order: 1;
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+.twin-node:not(.alive) {
+  order: 2;
+  opacity: 0;
+  transform: scale(0.82) translateY(20px);
+  pointer-events: none;
+}
+#vis-power {
+  order: 0 !important;
+  opacity: 1 !important;
+  transform: scale(1) translateY(0) !important;
+  pointer-events: auto !important;
+  border-color: rgba(192,132,252,0.35) !important;
+}
+
+/* Automatic pseudo wire connectors to the right of active modules */
+.twin-node.alive::after {
+  content: '';
+  position: absolute;
+  right: -44px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--c-wifi), var(--c-piano));
+  border-radius: 2px;
+  z-index: -1;
+}
+
+.twin-node.alive.power-node { border-color:rgba(192,132,252,0.4); box-shadow:0 0 20px rgba(192,132,252,0.08); }
+.twin-node.alive.wifi-node  { border-color:rgba(34,211,238,0.4);  box-shadow:0 0 20px rgba(34,211,238,0.08); }
+.twin-node.alive.piano-node { border-color:rgba(96,165,250,0.4);  box-shadow:0 0 20px rgba(96,165,250,0.08); }
+.twin-node.alive.rgb-node   { border-color:rgba(52,211,153,0.4);  box-shadow:0 0 20px rgba(52,211,153,0.08); }
+
+/* connector pins on sides */
+.twin-node::before {
+  content:''; position:absolute; top:50%; transform:translateY(-50%);
+  width:16px; height:28px;
+  background:#0a1020; border:2px solid var(--border);
+  z-index: 2; transition: border-color 0.3s, box-shadow 0.3s;
+}
+.twin-node::before { left:-16px; border-radius:5px 0 0 5px; border-right:none; }
+.twin-node.alive::before { border-color:var(--border-lit); }
+.twin-node.alive.power-node::before { border-color:rgba(192,132,252,0.6); box-shadow:0 0 8px rgba(192,132,252,0.3); }
+.twin-node.alive.wifi-node::before   { border-color:rgba(34,211,238,0.6);  box-shadow:0 0 8px rgba(34,211,238,0.3); }
+.twin-node.alive.piano-node::before { border-color:rgba(96,165,250,0.6);  box-shadow:0 0 8px rgba(96,165,250,0.3); }
+.twin-node.alive.rgb-node::before     { border-color:rgba(52,211,153,0.6);  box-shadow:0 0 8px rgba(52,211,153,0.3); }
+
+.node-top { display:flex; justify-content:space-between; align-items:center; }
+.node-name { font-size:13px; font-weight:700; }
+.node-badge {
+  font-family:var(--ff-mono); font-size:9px; text-transform:uppercase;
+  padding:2px 7px; border-radius:4px;
+  background:rgba(255,255,255,0.04); color:var(--text-dim);
+  transition:all 0.3s;
+}
+.twin-node.alive .node-badge { background:rgba(52,211,153,0.12); color:var(--c-rgb); }
+.node-body {
+  flex:1; min-height:90px;
+  background:#04070f; border:1px solid rgba(255,255,255,0.04);
+  border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+}
+.node-footer { font-family:var(--ff-mono); font-size:10px; color:var(--text-dim); text-align:center; text-transform:uppercase; }
+
+/* Power node svg */
+.power-svg { width:38px; height:38px; color:var(--c-power); filter:drop-shadow(0 0 8px var(--c-power)); animation:pulseGlow 2s infinite alternate; }
+@keyframes pulseGlow { from{filter:drop-shadow(0 0 4px var(--c-power))} to{filter:drop-shadow(0 0 16px var(--c-power))} }
+
+/* WiFi ring */
+.wifi-rings { position:relative; width:70px; height:70px; display:flex; align-items:center; justify-content:center; }
+.wifi-ring {
+  position:absolute; border-radius:50%;
+  border:2px solid var(--c-wifi); opacity:0;
+  animation:radarRing 2.4s infinite;
+}
+.wifi-ring:nth-child(1){width:28px;height:28px;animation-delay:0s;}
+.wifi-ring:nth-child(2){width:48px;height:48px;animation-delay:0.6s;}
+.wifi-ring:nth-child(3){width:68px;height:68px;animation-delay:1.2s;}
+@keyframes radarRing{ 0%{transform:scale(0.4);opacity:0.9} 100%{transform:scale(1);opacity:0} }
+.wifi-center { width:10px; height:10px; border-radius:50%; background:var(--c-wifi); box-shadow:0 0 10px var(--c-wifi); z-index:1; }
+
+/* Micro keys */
+.micro-keys { display:flex; gap:4px; padding:4px; }
+.m-key { width:26px; height:52px; background:#e2e8f0; border-radius:0 0 4px 4px; cursor:default; transition:all 0.1s; }
+.m-key.hit { background:#93c5fd; transform:translateY(3px); box-shadow:0 0 10px var(--c-piano); }
+
+/* RGB lens */
+.lens-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.lens-orb {
+  width:44px; height:44px; border-radius:50%;
+  background:#efe6e6; border:3px solid var(--border);
+  transition: background 0.4s, box-shadow 0.4s;
+}
+.lens-label { font-family:var(--ff-mono); font-size:11px; color:var(--text-mid); }
+
+/* =========================================================  PIANO PAGE */
+#page-piano .page-grid { display:grid; grid-template-columns:1fr 1.6fr; gap:24px; }
+@media(max-width:1000px){ #page-piano .page-grid{ grid-template-columns:1fr; } }
+
+.card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--r-card); padding:24px;
+}
+
+.song-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+.song-btn {
+  background:var(--bg-raised); border:1px solid var(--border);
+  color:var(--text-dim); font-family:var(--ff-body); font-weight:700; font-size:13px;
+  padding:8px 16px; border-radius:10px; cursor:pointer; transition:all 0.2s;
+}
+.song-btn:hover { color:var(--text); }
+.song-btn.active { background:rgba(96,165,250,0.1); border-color:var(--c-piano); color:var(--c-piano); }
+
+/* scrolling note track */
+.note-track {
+  background:#030509; border-radius:12px; padding:18px;
+  border:1px dashed var(--border-lit);
+  overflow-x:auto; margin-bottom:20px;
+  display:flex; align-items:center; gap:10px;
+  min-height:70px;
+}
+.note-bead {
+  font-family:var(--ff-mono); font-size:14px; font-weight:700;
+  padding:8px 14px; border-radius:8px; flex-shrink:0;
+  background:var(--bg-raised); color:var(--text-dim);
+  transition:all 0.25s;
+}
+.note-bead.target {
+  background:var(--c-warn); color:#050a14; font-weight:900;
+  box-shadow:0 0 18px rgba(251,191,36,0.5); transform:scale(1.12);
+  animation: beatBounce 0.8s ease infinite alternate;
+}
+@keyframes beatBounce { from{transform:scale(1.1)} to{transform:scale(1.18)} }
+.note-bead.done { background:rgba(52,211,153,0.15); color:var(--c-rgb); }
+
+/* Song status */
+.song-status-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--bg-raised); border-radius:10px; padding:12px 16px;
+  margin-bottom:20px;
+}
+.song-title-display { font-family:var(--ff-display); font-size:13px; font-weight:700; color:var(--text); }
+.song-progress { font-family:var(--ff-mono); font-size:12px; color:var(--text-dim); }
+.progress-bar-wrap { height:4px; background:var(--border); border-radius:2px; margin-top:6px; }
+.progress-bar-fill { height:100%; background:linear-gradient(90deg,var(--c-piano),var(--c-wifi)); border-radius:2px; transition:width 0.4s ease; }
+
+/* Big keyboard - DISPLAY ONLY, hints glow when note arrives from hardware */
+.big-keys-wrap {
+  background:#030509; border-radius:16px;
+  padding:20px; border:1px solid var(--border);
+  position:relative; overflow:hidden;
+}
+.big-keys-wrap::before {
+  content:'📡 WAITING FOR HARDWARE INPUT';
+  position:absolute; top:8px; right:12px;
+  font-family:var(--ff-mono); font-size:9px;
+  color:var(--text-dim); letter-spacing:1px;
+}
+.keyboard-row { display:flex; gap:6px; }
+.big-key {
+  flex:1; height:150px;
+  background: linear-gradient(180deg,#f8fafc 0%,#e2e8f0 100%);
+  border-radius:0 0 10px 10px;
+  display:flex; align-items:flex-end; justify-content:center;
+  padding-bottom:14px;
+  font-family:var(--ff-display); font-size:12px; font-weight:700; color:#475569;
+  position:relative; overflow:hidden;
+  transition:all 0.12s ease;
+  box-shadow: inset 0 -3px 0 #cbd5e1, 0 4px 8px rgba(0,0,0,0.4);
+  user-select:none; cursor:default;
+}
+.big-key::before {
+  content:''; position:absolute;
+  top:0; left:0; right:0; height:60%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);
+}
+.big-key.hint {
+  background:linear-gradient(180deg,#fef3c7,#fbbf24);
+  color:#78350f;
+  box-shadow: inset 0 -3px 0 #d97706, 0 0 24px rgba(251,191,36,0.6), 0 4px 8px rgba(0,0,0,0.3);
+  animation: keyGlow 1s infinite alternate;
+}
+@keyframes keyGlow { from{box-shadow:inset 0 -3px 0 #d97706,0 0 16px rgba(251,191,36,0.5)} to{box-shadow:inset 0 -3px 0 #d97706,0 0 32px rgba(251,191,36,0.8)} }
+.big-key.pressed {
+  background:linear-gradient(180deg,#bfdbfe,#93c5fd);
+  transform:translateY(5px);
+  box-shadow: inset 0 -1px 0 #60a5fa, 0 0 16px rgba(96,165,250,0.5);
+  color:#1e3a5f;
+}
+
+/* Piano info panel */
+.piano-info-side { display:flex; flex-direction:column; gap:16px; }
+.info-card {
+  background:var(--bg-raised); border:1px solid var(--border);
+  border-radius:14px; padding:18px;
+}
+.info-card-title { font-family:var(--ff-display); font-size:11px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+.note-display-big {
+  font-family:var(--ff-display); font-size:52px; font-weight:900;
+  color:var(--c-warn); text-align:center;
+  text-shadow:0 0 30px rgba(251,191,36,0.5);
+}
+.note-display-big.flash { animation:noteFlash2 0.2s ease; }
+@keyframes noteFlash2 { 0%{transform:scale(1.4);color:#fff;text-shadow:0 0 50px #fff} 100%{transform:scale(1)} }
+
+.step-indicator { font-family:var(--ff-mono); font-size:13px; color:var(--text-mid); text-align:center; margin-top:6px; }
+
+/* Song complete */
+.song-complete-banner {
+  display:none;
+  background:linear-gradient(135deg,rgba(52,211,153,0.15),rgba(34,211,238,0.1));
+  border:1px solid rgba(52,211,153,0.4);
+  border-radius:12px; padding:16px; text-align:center;
+  font-family:var(--ff-display); font-size:15px; font-weight:700;
+  color:var(--c-rgb);
+}
+.song-complete-banner.show { display:block; animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* =========================================================  COLOUR PAGE */
+#page-colour .colour-layout { display:grid; grid-template-columns:340px 1fr; gap:24px; }
+@media(max-width:1000px){ #page-colour .colour-layout{ grid-template-columns:1fr; } }
+
+.colour-telemetry { display:flex; flex-direction:column; gap:16px; }
+
+.slider-group { display:flex; flex-direction:column; gap:14px; }
+.slider-row { display:flex; flex-direction:column; gap:6px; }
+.slider-row-head { display:flex; justify-content:space-between; font-family:var(--ff-mono); font-size:12px; }
+input[type=range] { width:100%; height:6px; border-radius:3px; cursor:default; }
+
+.swatch-big {
+  width:100%; height:80px; border-radius:14px;
+  border:2px solid var(--border);
+  transition: background 0.4s, box-shadow 0.4s;
+  margin-top:4px;
+}
+.hex-display { font-family:var(--ff-display); font-size:22px; font-weight:700; margin-top:8px; }
+
+/* Image selector gallery */
+.gallery-title { font-family:var(--ff-display); font-size:13px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; font-weight:700; }
+.image-gallery {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+  margin-bottom:20px;
+}
+.gallery-thumb {
+  border-radius:12px; overflow:hidden;
+  border:2px solid var(--border);
+  cursor:pointer; transition:all 0.25s;
+  aspect-ratio:1; position:relative;
+  background:var(--bg-raised);
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px;
+}
+.gallery-thumb:hover { border-color:var(--border-lit); transform:scale(1.04); }
+.gallery-thumb.selected { border-color:var(--c-wifi); box-shadow:0 0 16px rgba(34,211,238,0.3); }
+.gallery-thumb .thumb-label {
+  position:absolute; bottom:0; left:0; right:0;
+  background:rgba(0,0,0,0.7); font-size:10px; font-family:var(--ff-mono);
+  text-align:center; padding:4px; color:var(--text-mid);
+}
+
+/* SVG artboard */
+.artboard-wrap {
+  background:#e9eaee; border-radius:16px;
+  border:1px solid var(--border);
+  padding:32px; display:flex; align-items:center; justify-content:center;
+  min-height:400px; flex:1;
+}
+.artboard-wrap svg { width:100%; max-width:400px; height:auto; }
+
+.fill-seg {
+  cursor:pointer;
+  transition:filter 0.15s;
+  stroke:#1e2d50; stroke-width:1.5;
+}
+.fill-seg:hover { filter:brightness(1.3); stroke:var(--c-wifi); stroke-width:2; }
+
+/* painting instruction */
+.paint-tip {
+  background:rgba(34,211,238,0.08); border:1px solid rgba(34,211,238,0.2);
+  border-radius:10px; padding:10px 14px;
+  font-size:12px; color:var(--c-wifi); font-family:var(--ff-mono);
+  margin-bottom:16px;
+}
+
+/* =========================================================  INFO PAGE */
+.info-layout { display:grid; grid-template-columns:260px 1fr; gap:24px; }
+@media(max-width:900px){ .info-layout{ grid-template-columns:1fr; } }
+
+.info-sidebar { display:flex; flex-direction:column; gap:6px; }
+.info-nav-btn {
+  border:none; background:var(--bg-card); border:1px solid var(--border);
+  color:var(--text-dim); font-family:var(--ff-body); font-weight:700; font-size:13px;
+  padding:14px 18px; border-radius:12px; text-align:left;
+  cursor:pointer; transition:all 0.22s;
+}
+.info-nav-btn:hover { color:var(--text); background:var(--bg-raised); }
+.info-nav-btn.active { background:var(--bg-raised); border-color:var(--c-wifi); color:var(--c-wifi); }
+
+.info-content-area {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--r-card); padding:36px;
+}
+.info-pane { display:none; }
+.info-pane.active { display:block; animation:pageFade 0.3s ease; }
+
+.info-pane h3 { font-family:var(--ff-display); font-size:22px; font-weight:700; margin-bottom:14px; }
+.info-pane p { color:var(--text-mid); line-height:1.8; font-size:15px; margin-bottom:24px; }
+
+/* Pipeline diagram */
+.pipeline {
+  display:flex; align-items:center; gap:0;
+  flex-wrap:wrap;
+  background:#03050a; padding:24px; border-radius:14px;
+  border:1px solid var(--border); margin-bottom:24px;
+}
+.pipe-node {
+  padding:10px 16px; background:var(--bg-raised);
+  border:1px solid var(--border-lit); border-radius:8px;
+  font-family:var(--ff-mono); font-size:12px; font-weight:700;
+  text-transform:uppercase; flex-shrink:0;
+}
+.pipe-arrow {
+  flex:1; min-width:24px; height:4px;
+  background:linear-gradient(90deg,var(--c-piano),var(--c-wifi));
+  border-radius:2px; position:relative; overflow:hidden; margin:0 4px;
+}
+.pipe-arrow::after {
+  content:''; position:absolute;
+  top:0; left:-24px; width:24px; height:100%;
+  background:#fff; animation:electronFlow 1.4s infinite linear;
+}
+@keyframes electronFlow { to{left:100%;} }
+
+/* Schematic box */
+.schematic-box {
+  background:#03050a; border:1px dashed var(--border-lit);
+  border-radius:14px; padding:24px; position:relative;
+  margin-bottom:24px;
+}
+.schematic-rail {
+  position:relative; height:36px; width:100%;
+  border-bottom:2px dashed #1e2d50; margin-bottom:20px;
+}
+.electron-dot {
+  position:absolute; bottom:-5px; left:0;
+  width:8px; height:8px; border-radius:50%;
+  background:#38bdf8; box-shadow:0 0 8px #38bdf8;
+  animation:traceElectron 3s infinite linear;
+}
+@keyframes traceElectron { 0%{left:0%;opacity:1}80%{opacity:1}100%{left:100%;opacity:0} }
+.switch-arm {
+  display:inline-block; width:28px; height:2px;
+  background:var(--c-danger); transform-origin:left bottom;
+  transform:rotate(-30deg); transition:transform 0.2s cubic-bezier(0.175,0.885,0.32,1.275);
+  border-radius:1px;
+}
+.schematic-box.sw-closed .switch-arm { transform:rotate(0deg); background:var(--c-rgb); }
+.rail-label { font-family:var(--ff-mono); font-size:10px; color:var(--text-dim); position:absolute; top:4px; }
+
+/* Animated circuit flow vertical diagram */
+.circuit-flow {
+  display:flex; flex-direction:column; align-items:center; gap:0;
+  background:#03050a; border:1px solid var(--border);
+  border-radius:14px; padding:24px; width:100%;
+}
+.cf-node {
+  background:var(--bg-raised); border:1px solid var(--border-lit);
+  border-radius:10px; padding:12px 24px;
+  font-family:var(--ff-mono); font-size:13px; font-weight:700;
+  text-transform:uppercase; text-align:center; width:200px;
+  position:relative;
+}
+.cf-node.active-cf { border-color:var(--c-wifi); color:var(--c-wifi); box-shadow:0 0 12px rgba(34,211,238,0.2); }
+.cf-wire {
+  width:2px; height:28px;
+  background:linear-gradient(180deg,var(--c-piano),var(--c-wifi));
+  position:relative; overflow:visible;
+}
+.cf-electron {
+  position:absolute; left:50%; transform:translateX(-50%);
+  width:8px; height:8px; border-radius:50%;
+  background:#fff; box-shadow:0 0 8px #38bdf8;
+  top:-4px;
+  animation:flowDown 1.8s infinite linear;
+}
+@keyframes flowDown { 0%{top:-4px;opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{top:32px;opacity:0} }
+
+.cf-electron:nth-child(2) { animation-delay:0.6s; }
+.cf-electron:nth-child(3) { animation-delay:1.2s; }
+
+.info-two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+@media(max-width:700px){ .info-two-col{grid-template-columns:1fr;} }
+
+/* GPIO description */
+.tech-steps { display:flex; flex-direction:column; gap:12px; }
+.tech-step {
+  display:flex; gap:14px; align-items:flex-start;
+  background:var(--bg-raised); border-radius:10px; padding:14px;
+  border-left:3px solid var(--border-lit);
+}
+.tech-step.step-btn   { border-left-color:var(--c-power); }
+.tech-step.step-gpio  { border-left-color:var(--c-piano); }
+.tech-step.step-esp   { border-left-color:var(--c-wifi); }
+.tech-step.step-fb    { border-left-color:var(--c-warn); }
+.tech-step.step-dash  { border-left-color:var(--c-rgb); }
+.step-icon { font-size:22px; flex-shrink:0; }
+.step-text h5 { font-family:var(--ff-display); font-size:12px; font-weight:700; color:var(--text); margin-bottom:4px; }
+.step-text p { font-size:12px; color:var(--text-dim); line-height:1.6; }
+
+/* =========================================================  SHARED UTILS */
+.row { display:flex; gap:16px; flex-wrap:wrap; }
+.col-half { flex:1; min-width:280px; }
+
+/* Pulse animation for active nodes */
+@keyframes aliveRing {
+  0%   { box-shadow: 0 0 0 0 rgba(52,211,153,0.4); }
+  70%  { box-shadow: 0 0 0 12px rgba(52,211,153,0); }
+  100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+}
+
+/* cloud gating */
+.cloud-gated { opacity:0.3; filter:grayscale(1); transition:all 0.5s; }
+.cloud-on .cloud-gated { opacity:1; filter:none; }
+
+/* responsive */
+@media(max-width:768px){
+  .nav { padding:12px 16px; }
+  .nav-brand .logo-sub { display:none; }
+  .page { padding:18px 16px; }
+  .metrics-grid { grid-template-columns:repeat(2,1fr); }
+  .bus-zone { padding:24px 16px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="logo-star">⚡</div>
+    <span class="logo-text">ElectroBlocks</span>
+    <span class="logo-sub">VERY 7 PRO</span>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="goPage('home',this)">🏠 Home</button>
+    <button class="nav-tab" onclick="goPage('piano',this)">🎹 Piano</button>
+    <button class="nav-tab" onclick="goPage('colour',this)">🎨 Colour</button>
+    <button class="nav-tab" onclick="goPage('info',this)">💡 Learn</button>
+  </div>
+
+  <div class="status-pill">
+    <div class="status-dot" id="sys-dot"></div>
+    <span id="sys-label">OFFLINE</span>
+  </div>
+</nav>
+
+
+<div class="page active" id="page-home">
+
+  <div class="sec-head">🖥️ System Telemetry</div>
+
+  <div class="metrics-grid">
+    <div class="metric-card pwr">
+      <div class="metric-label">⚡ Battery</div>
+      <div class="bat-wrap">
+        <div class="bat-body"><div class="bat-fill" id="ui-bat-fill" style="width:0%"></div></div>
+        <div class="metric-val" id="ui-bat-pct">--%</div>
+      </div>
+    </div>
+    <div class="metric-card pwr">
+      <div class="metric-label">🔌 Estimated Battery life</div>
+      <div class="metric-val" id="batteryLife">-- <span class="metric-unit">Hours</span></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">🧱 Active Modules</div>
+      <div class="metric-val" id="ui-active">0 <span class="metric-unit" style="font-size:14px">/ 8</span></div>
+    </div>
+    <div class="metric-card net cloud-gated">
+      <div class="metric-label">⏱ Uptime</div>
+      <div class="metric-val" id="ui-uptime" style="font-size:22px">--:--:--</div>
+    </div>
+    <div class="metric-card net cloud-gated">
+      <div class="metric-label">📶 WiFi Signal</div>
+      <div class="metric-val" id="ui-rssi">-- <span class="metric-unit">dBm</span></div>
+    </div>
+    <div class="metric-card net cloud-gated">
+      <div class="metric-label">📡 Firebase Ping</div>
+      <div class="metric-val" id="ui-latency">-- <span class="metric-unit">ms</span></div>
+    </div>
+    <div class="metric-card net cloud-gated">
+      <div class="metric-label">📦 Packets/sec</div>
+      <div class="metric-val" id="ui-pkts">-- <span class="metric-unit">p/s</span></div>
+    </div>
+    <div class="metric-card note">
+      <div class="metric-label">🎹 Last Piano Note</div>
+      <div class="last-note-big" id="ui-last-note">--</div>
+    </div>
+  </div>
+
+  <div class="home-bottom-grid">
+    <div class="metric-card rgb">
+      <div class="metric-label">🎨 RGB Live Preview</div>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:8px;">
+        <div class="swatch-preview" id="ui-swatch"></div>
+        <div>
+          <div style="font-family:var(--ff-display);font-size:18px;font-weight:700;" id="ui-hex-home">#000000</div>
+          <div style="font-family:var(--ff-mono);font-size:11px;color:var(--text-dim);margin-top:4px;" id="ui-rgb-label">R:0 G:0 B:0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-card" style="display:flex;flex-direction:column;justify-content:space-between;">
+      <div class="metric-label">🔋 Voltage Rail</div>
+      <div class="metric-val">5 <span class="metric-unit">V</span></div>
+      <div style="font-family:var(--ff-mono);font-size:10px;color:var(--text-dim);margin-top:10px;">VCC</div>
+    </div>
+
+    <div class="activity-feed">
+      <h4>📋 Recent Activity</h4>
+      <div id="feed-list">
+        <div class="feed-item">
+          <div class="feed-dot" style="background:var(--c-power)"></div>
+          <div style="flex:1">Power Core initialised</div>
+          <div class="feed-time">now</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-head" style="margin-top:32px;">🔗 Data Bus — ElectroBlocks Chain</div>
+
+  <div class="bus-zone">
+    <div class="bus-track" id="bus-track">
+
+      <div class="twin-node power-node alive" id="vis-power">
+        <div class="node-top">
+          <div class="node-name" style="color:var(--c-power);">⚡ Power Core</div>
+          <div class="node-badge">ANCHOR</div>
+        </div>
+        <div class="node-body">
+          <svg class="power-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <div class="node-footer">VCC MASTER RAIL</div>
+      </div>
+
+      <div class="twin-node wifi-node" id="vis-wifi">
+        <div class="node-top">
+          <div class="node-name" style="color:var(--c-wifi);">🌐 WiFi Block</div>
+          <div class="node-badge">ABSENT</div>
+        </div>
+        <div class="node-body">
+          <div class="wifi-rings">
+            <div class="wifi-ring"></div><div class="wifi-ring"></div><div class="wifi-ring"></div>
+            <div class="wifi-center"></div>
+          </div>
+        </div>
+        <div class="node-footer">CLOUD GATEWAY</div>
+      </div>
+
+      <div class="twin-node piano-node" id="vis-b1">
+        <div class="node-top">
+          <div class="node-name" style="color:var(--c-piano);">🎹 Piano Node 1</div>
+          <div class="node-badge">ACTIVE</div>
+        </div>
+        <div class="node-body">
+          <div class="micro-keys">
+            <div class="m-key" data-note="G3"></div>
+            <div class="m-key" data-note="A3"></div>
+            <div class="m-key" data-note="B3"></div>
+          </div>
+        </div>
+        <div class="node-footer">OCTAVE 3</div>
+      </div>
+
+      <div class="twin-node piano-node" id="vis-b2">
+        <div class="node-top">
+          <div class="node-name" style="color:var(--c-piano);">🎹 Piano Node 2</div>
+          <div class="node-badge">ACTIVE</div>
+        </div>
+        <div class="node-body">
+          <div class="micro-keys">
+            <div class="m-key" data-note="C4"></div>
+            <div class="m-key" data-note="D4"></div>
+            <div class="m-key" data-note="E4"></div>
+          </div>
+        </div>
+        <div class="node-footer">OCTAVE 4 MID</div>
+      </div>
+
+      <div class="twin-node piano-node" id="vis-b3">
+        <div class="node-top">
+          <div class="node-name" style="color:var(--c-piano);">🎹 Piano Node 3</div>
+          <div class="node-badge">ACTIVE</div>
+        </div>
+        <div class="node-body">
+          <div class="micro-keys">
+            <div class="m-key" data-note="F4"></div>
+            <div class="m-key" data-note="G4"></div>
+            <div class="m-key" data-note="A4"></div>
+          </div>
+        </div>
+        <div class="node-footer">OCTAVE 4 HIGH</div>
+      </div>
+
+      <div class="twin-node rgb-node" id="vis-r">
+        <div class="node-top">
+          <div class="node-name" style="color:var(--c-danger);">🔴 Red Channel</div>
+          <div class="node-badge">ACTIVE</div>
+        </div>
+        <div class="node-body">
+          <div class="lens-wrap">
+            <div class="lens-orb" id="lens-r"></div>
+            <div class="lens-label" id="readout-r">R: 0</div>
+          </div>
+        </div>
+        <div class="node-footer">CHROMA R</div>
+      </div>
+
+      <div class="twin-node rgb-node" id="vis-g">
+        <div class="node-top">
+          <div class="node-name" style="color:var(--c-rgb);">🟢 Green Channel</div>
+          <div class="node-badge">ACTIVE</div>
+        </div>
+        <div class="node-body">
+          <div class="lens-wrap">
+            <div class="lens-orb" id="lens-g"></div>
+            <div class="lens-label" id="readout-g">G: 0</div>
+          </div>
+        </div>
+        <div class="node-footer">CHROMA G</div>
+      </div>
+
+      <div class="twin-node rgb-node" id="vis-b">
+        <div class="node-top">
+          <div class="node-name" style="color:var(--c-piano);">🔵 Blue Channel</div>
+          <div class="node-badge">ACTIVE</div>
+        </div>
+        <div class="node-body">
+          <div class="lens-wrap">
+            <div class="lens-orb" id="lens-b"></div>
+            <div class="lens-label" id="readout-b">B: 0</div>
+          </div>
+        </div>
+        <div class="node-footer">CHROMA B</div>
+      </div>
+
+    </div>
+  </div>
+
+</div><div class="page" id="page-piano">
+  <div class="sec-head">🎹 Piano Lab</div>
+
+  <div class="page-grid">
+
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="card">
+        <div style="font-family:var(--ff-display);font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🎵 Choose a Song</div>
+        <div class="song-tabs">
+          <button class="song-btn active" onclick="loadSong('twinkle',this)">⭐ Twinkle Twinkle</button>
+          <button class="song-btn" onclick="loadSong('lamb',this)">🐑 Mary Had a Lamb</button>
+          <button class="song-btn" onclick="loadSong('boat',this)">🚣 Row Your Boat</button>
+          <button class="song-btn" onclick="loadSong('happy',this)">😊 Happy Birthday</button>
+          <button class="song-btn" onclick="loadSong('ode',this)">🎻 Ode to Joy</button>
+        </div>
+      </div>
+
+      <div class="song-status-bar">
+        <div>
+          <div class="song-title-display" id="piano-song-title">Twinkle Twinkle Little Star</div>
+          <div class="progress-bar-wrap" style="width:200px;">
+            <div class="progress-bar-fill" id="piano-progress" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="song-progress" id="piano-step-label">Step 1 / 11</div>
+      </div>
+
+      <div class="note-track" id="note-track"></div>
+
+      <div class="big-keys-wrap">
+        <div class="keyboard-row">
+          <div class="big-key" id="gkey-G3">G3</div>
+          <div class="big-key" id="gkey-A3">A3</div>
+          <div class="big-key" id="gkey-B3">B3</div>
+          <div class="big-key" id="gkey-C4">C4</div>
+          <div class="big-key" id="gkey-D4">D4</div>
+          <div class="big-key" id="gkey-E4">E4</div>
+          <div class="big-key" id="gkey-F4">F4</div>
+          <div class="big-key" id="gkey-G4">G4</div>
+          <div class="big-key" id="gkey-A4">A4</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="piano-info-side">
+
+      <div class="info-card">
+        <div class="info-card-title">🎵 Note Received</div>
+        <div class="note-display-big" id="piano-note-big">--</div>
+        <div class="step-indicator" id="piano-step-info">Press a key on the physical blocks!</div>
+      </div>
+
+      <div class="song-complete-banner" id="song-complete-banner">
+        🎉 Perfect! Song Complete! Well done!
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-title">💡 How It Works</div>
+        <div style="font-size:13px;color:var(--text-mid);line-height:1.8;">
+          <p style="margin-bottom:8px;">📟 <strong>Press keys on the physical ElectroBlocks hardware.</strong> This page shows which note to press next.</p>
+          <p style="margin-bottom:8px;">⚡ The ESP32 detects your keypress via GPIO interrupts and sends the note name to Firebase.</p>
+          <p>🌐 This dashboard updates in real-time — follow the glowing yellow key!</p>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-title">📊 Session Stats</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
+          <div style="text-align:center;">
+            <div style="font-family:var(--ff-display);font-size:28px;font-weight:700;color:var(--c-rgb);" id="stat-correct">0</div>
+            <div style="font-family:var(--ff-mono);font-size:10px;color:var(--text-dim);">CORRECT</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:var(--ff-display);font-size:28px;font-weight:700;color:var(--c-warn);" id="stat-songs">0</div>
+            <div style="font-family:var(--ff-mono);font-size:10px;color:var(--text-dim);">SONGS DONE</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div><div class="page" id="page-colour">
+  <div class="sec-head">🎨 Colour Lab</div>
+
+  <div class="colour-layout">
+
+    <div class="colour-telemetry">
+
+      <div class="card">
+        <div style="font-family:var(--ff-display);font-size:12px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">Hardware RGB Telemetry</div>
+
+        <div class="slider-group">
+          <div class="slider-row">
+            <div class="slider-row-head"><span style="color:var(--c-danger);">● Red Channel</span><span id="cc-rv">0</span></div>
+            <input type="range" min="0" max="255" value="0" id="cc-r" disabled style="accent-color:var(--c-danger);">
+          </div>
+          <div class="slider-row">
+            <div class="slider-row-head"><span style="color:var(--c-rgb);">● Green Channel</span><span id="cc-gv">0</span></div>
+            <input type="range" min="0" max="255" value="0" id="cc-g" disabled style="accent-color:var(--c-rgb);">
+          </div>
+          <div class="slider-row">
+            <div class="slider-row-head"><span style="color:var(--c-piano);">● Blue Channel</span><span id="cc-bv">0</span></div>
+            <input type="range" min="0" max="255" value="0" id="cc-b" disabled style="accent-color:var(--c-piano);">
+          </div>
+        </div>
+
+        <div class="swatch-big" id="cc-swatch"></div>
+        <div class="hex-display" id="cc-hex">#000000</div>
+        <div style="font-family:var(--ff-mono);font-size:11px;color:var(--text-dim);margin-top:4px;" id="cc-rgb-label">R:0  G:0  B:0</div>
+      </div>
+
+      <div class="card">
+        <div class="gallery-title">🖼️ Choose an Image to Colour</div>
+        <div class="paint-tip">🖌️ Select an image below, then tap a section in the canvas to paint it with the current RGB colour!</div>
+        <div class="image-gallery" id="image-gallery">
+          </div>
+      </div>
+
+    </div>
+
+    <div class="card" style="display:flex;flex-direction:column;">
+      <div class="deck-header-bar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-family:var(--ff-display);font-size:14px;font-weight:700;" id="artboard-title">🚀 DAP</div>
+        <button onclick="resetCanvas()" style="background:rgba(119, 12, 12, 0.05);border:1px solid var(--border);color:var(--text-dim);font-family:var(--ff-body);font-weight:700;font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;">↺ Reset</button>
+      </div>
+
+      <div class="artboard-wrap" id="artboard-wrap">
+        </div>
+    </div>
+
+  </div>
+</div><div class="page" id="page-info">
+  <div class="sec-head">💡 Learn — How ElectroBlocks Works</div>
+
+  <div class="info-layout">
+
+    <div class="info-sidebar">
+      <button class="info-nav-btn active" onclick="showInfo('intro',this)">🚀 Introduction</button>
+      <button class="info-nav-btn" onclick="showInfo('circuit',this)">⚡ Circuit Loop</button>
+      <button class="info-nav-btn" onclick="showInfo('gpio',this)">🔌 Button & GPIO</button>
+      <button class="info-nav-btn" onclick="showInfo('esp32',this)">🖥️ ESP32 & WiFi</button>
+      <button class="info-nav-btn" onclick="showInfo('firebase',this)">🔥 Firebase Sync</button>
+      <button class="info-nav-btn" onclick="showInfo('dashboard',this)">🌐 Dashboard Update</button>
+    </div>
+
+    <div class="info-content-area">
+
+      <div class="info-pane active" id="info-intro">
+        <h3>Welcome to ElectroBlocks! 🎉</h3>
+        <p>ElectroBlocks is a set of colourful snap-together electronic modules that talk to the internet! Each block has a job, and when you connect them together, they create a working electronic system that you can see live on this screen.</p>
+
+        <div class="tech-steps">
+          <div class="tech-step step-btn">
+            <div class="step-icon">⚡</div>
+            <div class="step-text">
+              <h5>Power Block</h5>
+              <p>Always on! Sends electricity to all the other blocks through the snap rail.</p>
+            </div>
+          </div>
+          <div class="tech-step step-gpio">
+            <div class="step-icon">🌐</div>
+            <div class="step-text">
+              <h5>WiFi Block</h5>
+              <p>Connects the system to the internet so data can travel to the cloud.</p>
+            </div>
+          </div>
+          <div class="tech-step step-esp">
+            <div class="step-icon">🎹</div>
+            <div class="step-text">
+              <h5>Piano Blocks</h5>
+              <p>Each piano block has 3 keys. Press them and the ESP32 inside detects the signal!</p>
+            </div>
+          </div>
+          <div class="tech-step step-fb">
+            <div class="step-icon">🎨</div>
+            <div class="step-text">
+              <h5>RGB Colour Blocks</h5>
+              <p>Three blocks controlling red, green and blue light. Mix them to make any colour!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-pane" id="info-circuit">
+        <h3>⚡ How the Circuit Loop Works</h3>
+        <p>Electricity flows in a loop — it needs a complete path from the battery through all the components and back again. Like water in a circle!</p>
+
+        <div class="schematic-box" id="edu-circuit-box">
+          <div class="schematic-rail">
+            <div class="electron-dot"></div>
+            <div class="electron-dot" style="animation-delay:1s"></div>
+            <span class="rail-label">⚡ VCC Power Rail (3.3V)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+            <span style="font-family:var(--ff-mono);font-size:12px;color:var(--text-mid);">Switch State:</span>
+            <div class="switch-arm"></div>
+            <span style="font-family:var(--ff-mono);font-size:11px;color:var(--text-dim);" id="switch-state-label">OPEN (no current)</span>
+          </div>
+        </div>
+
+        <div class="info-two-col">
+          <div style="background:var(--bg-raised);border-radius:12px;padding:16px;border-left:3px solid var(--c-danger);">
+            <div style="font-family:var(--ff-display);font-size:12px;font-weight:700;color:var(--c-danger);margin-bottom:8px;">🔴 OPEN CIRCUIT</div>
+            <p style="font-size:12px;color:var(--text-mid);">Switch open = circuit broken = electrons can't flow = no current!</p>
+          </div>
+          <div style="background:var(--bg-raised);border-radius:12px;padding:16px;border-left:3px solid var(--c-rgb);">
+            <div style="font-family:var(--ff-display);font-size:12px;font-weight:700;color:var(--c-rgb);margin-bottom:8px;">🟢 CLOSED CIRCUIT</div>
+            <p style="font-size:12px;color:var(--text-mid);">Switch closed = circuit complete = electrons zoom through = current flows!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-pane" id="info-gpio">
+        <h3>🔌 Button Press & GPIO Detection</h3>
+        <p>GPIO stands for <strong>General Purpose Input/Output</strong> — these are special pins on the ESP32 chip that can detect if electricity is flowing or not. When you press a key, you close a circuit through one of these pins!</p>
+
+        <div class="circuit-flow">
+          <div class="cf-node">🎹 Piano Key Pressed</div>
+          <div class="cf-wire"><div class="cf-electron"></div><div class="cf-electron" style="animation-delay:0.6s"></div></div>
+          <div class="cf-node">⚡ GPIO Pin Goes LOW</div>
+          <div class="cf-wire"><div class="cf-electron"></div><div class="cf-electron" style="animation-delay:0.6s"></div></div>
+          <div class="cf-node">🖥️ ESP32 Fires Interrupt</div>
+          <div class="cf-wire"><div class="cf-electron"></div></div>
+          <div class="cf-node active-cf">📤 Data Sent to WiFi</div>
+        </div>
+
+        <div style="margin-top:20px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);border-radius:10px;padding:14px;">
+          <div style="font-family:var(--ff-display);font-size:12px;font-weight:700;color:var(--c-piano);margin-bottom:6px;">🧠 What is an Interrupt?</div>
+          <p style="font-size:13px;color:var(--text-mid);line-height:1.7;">An interrupt is like a doorbell for the ESP32's brain. Instead of constantly checking "is the button pressed? is it pressed?", the ESP32 can do other work and the button literally interrupts it the moment it's pressed — much faster and smarter!</p>
+        </div>
+      </div>
+
+      <div class="info-pane" id="info-esp32">
+        <h3>🖥️ ESP32 & WiFi Transmission</h3>
+        <p>The ESP32 is a tiny but powerful computer chip with built-in WiFi. It reads the piano keys and RGB dials, packages the data, and sends it wirelessly to the internet!</p>
+
+        <div class="pipeline">
+          <div class="pipe-node">🎹 Key Event</div>
+          <div class="pipe-arrow"></div>
+          <div class="pipe-node">⚙️ ESP32 CPU</div>
+          <div class="pipe-arrow"></div>
+          <div class="pipe-node">📦 JSON Pack</div>
+          <div class="pipe-arrow"></div>
+          <div class="pipe-node">📡 WiFi Send</div>
+          <div class="pipe-arrow"></div>
+          <div class="pipe-node">☁️ Internet</div>
+        </div>
+
+        <div class="tech-steps">
+          <div class="tech-step step-gpio">
+            <div class="step-icon">⚙️</div>
+            <div class="step-text">
+              <h5>Step 1 — Detect</h5>
+              <p>GPIO interrupt fires when a piano key is pressed. The CPU immediately knows which pin was triggered.</p>
+            </div>
+          </div>
+          <div class="tech-step step-esp">
+            <div class="step-icon">📦</div>
+            <div class="step-text">
+              <h5>Step 2 — Package</h5>
+              <p>ESP32 creates a small JSON message like: <code style="font-family:var(--ff-mono);color:var(--c-wifi);">{"note":"C4","time":12345}</code></p>
+            </div>
+          </div>
+          <div class="tech-step step-fb">
+            <div class="step-icon">📡</div>
+            <div class="step-text">
+              <h5>Step 3 — Transmit</h5>
+              <p>The WiFi module sends the data as radio waves to your home router, and off it goes to the internet!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-pane" id="info-firebase">
+        <h3>🔥 Firebase Synchronisation</h3>
+        <p>Firebase is a database in the cloud run by Google. The ESP32 writes data to it and this dashboard reads from it — all in milliseconds!</p>
+
+        <div class="pipeline">
+          <div class="pipe-node">📡 ESP32</div>
+          <div class="pipe-arrow"></div>
+          <div class="pipe-node">🌐 Internet</div>
+          <div class="pipe-arrow"></div>
+          <div class="pipe-node">🔥 Firebase DB</div>
+          <div class="pipe-arrow"></div>
+          <div class="pipe-node">📲 Dashboard</div>
+        </div>
+
+        <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:18px;margin-top:8px;">
+          <div style="font-family:var(--ff-display);font-size:12px;font-weight:700;color:var(--c-warn);margin-bottom:10px;">🔥 Firebase Realtime Database Tree</div>
+          <pre style="font-family:var(--ff-mono);font-size:12px;color:var(--text-mid);line-height:1.8;">ElectroBlocks/
+├── piano/
+│   ├── lastNote: "C4"
+│   ├── lastPressedAt: 1718000000
+│   ├── B1_Status: "online"
+│   └── uptime: "00:12:34"
+├── rgb/
+│   ├── R_Value: 255
+│   ├── G_Value: 128
+│   └── B_Value: 0
+└── ina219/
+    ├── batteryPercentage: 87
+    └── current_mA: 142.3</pre>
+        </div>
+      </div>
+
+      <div class="info-pane" id="info-dashboard">
+        <h3>🌐 Dashboard Realtime Updates</h3>
+        <p>This dashboard uses Firebase's <strong>onValue</strong> listener — it subscribes to changes and gets notified instantly whenever the ESP32 writes new data. No need to reload the page!</p>
+
+        <div class="circuit-flow">
+          <div class="cf-node">🎹 Physical Key Press</div>
+          <div class="cf-wire"><div class="cf-electron"></div><div class="cf-electron" style="animation-delay:0.6s"></div></div>
+          <div class="cf-node">⚡ GPIO Interrupt</div>
+          <div class="cf-wire"><div class="cf-electron"></div><div class="cf-electron" style="animation-delay:0.6s"></div></div>
+          <div class="cf-node">🖥️ ESP32 Processing</div>
+          <div class="cf-wire"><div class="cf-electron"></div><div class="cf-electron" style="animation-delay:0.6s"></div></div>
+          <div class="cf-node">📡 WiFi Transmission</div>
+          <div class="cf-wire"><div class="cf-electron"></div><div class="cf-electron" style="animation-delay:0.6s"></div></div>
+          <div class="cf-node">🔥 Firebase Database</div>
+          <div class="cf-wire"><div class="cf-electron"></div><div class="cf-electron" style="animation-delay:0.6s"></div></div>
+          <div class="cf-node active-cf">🌐 Dashboard Updates!</div>
+        </div>
+
+        <div style="margin-top:20px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:10px;padding:14px;">
+          <p style="font-size:13px;color:var(--text-mid);line-height:1.7;">⏱ The entire journey from keypress to screen update takes under <strong style="color:var(--c-rgb);">100 milliseconds</strong> — that's faster than a blink!</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div><script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  databaseURL: "https://electroblocks-87beb-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* ======================================================
+   SONGS DATA
+====================================================== */
+const songs = {
+  twinkle: {
+    title:"⭐ Twinkle Twinkle Little Star",
+    notes:['C4','C4','G4','G4','A4','A4','G4','F4','F4','E4','E4','D4','D4','C4']
+  },
+  lamb: {
+    title:"🐑 Mary Had a Little Lamb",
+    notes:['E4','D4','C4','D4','E4','E4','E4','D4','D4','D4','E4','G4','G4']
+  },
+  boat: {
+    title:"🚣 Row, Row, Row Your Boat",
+    notes:['G3','G3','G3','A3','B3','B3','A3','B3','C4','D4']
+  },
+  happy: {
+    title:"😊 Happy Birthday",
+    notes:['G3','G3','A3','G3','C4','B3','G3','G3','A3','G3','D4','C4']
+  },
+  ode: {
+    title:"🎻 Ode to Joy",
+    notes:['E4','E4','F4','G4','G4','F4','E4','D4','C4','C4','D4','E4','E4','D4','D4']
+  }
+};
+
+let curSong = 'twinkle';
+let songStep = 0;
+let statCorrect = 0;
+let statSongs = 0;
+let lastTimestamp = null;
+let selectedColor = '#3b82f6';
+
+/* ======================================================
+   COLOUR IMAGE GALLERY DATA
+====================================================== */
+const artImages = [
+  { id:'rocket',  label:'🚀 DAP',  emoji:'🚀', artboard: buildRocketSVG  },
+  { id:'house',   label:'🏠 House',   emoji:'🏠', artboard: buildHouseSVG   },
+  { id:'robot',   label:'🤖 Robot',   emoji:'🤖', artboard: buildRobotSVG   },
+  { id:'fish',    label:'🐟 Fish',    emoji:'🐟', artboard: buildFishSVG    },
+  { id:'sun',     label:'☀️ Sun',     emoji:'☀️', artboard: buildSunSVG     },
+  { id:'car',     label:'🚗 Car',     emoji:'🚗', artboard: buildCarSVG     },
+];
+
+let selectedArt = 'rocket';
+
+/* ======================================================
+   SVG ARTBOARD BUILDERS
+====================================================== */
+function fillSegAttr(id) {
+  return `class="fill-seg" id="seg-${id}" onclick="paintSeg('${id}')" fill="#ffffff"`;
+}
+
+function buildRocketSVG() {
+  return `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+  <path ${fillSegAttr('nose')} d="M100 10 L60 80 L140 80 Z"/>
+  <rect ${fillSegAttr('body')} x="60" y="80" width="80" height="100" rx="8"/>
+  <rect ${fillSegAttr('window')} x="82" y="100" width="36" height="36" rx="18"/>
+  <path ${fillSegAttr('fin-l')} d="M60 140 L30 185 L60 175 Z"/>
+  <path ${fillSegAttr('fin-r')} d="M140 140 L170 185 L140 175 Z"/>
+  <path ${fillSegAttr('flame-1')} d="M80 180 Q85 215 100 225 Q115 215 120 180 Z"/>
+  <path ${fillSegAttr('flame-2')} d="M90 180 Q93 205 100 210 Q107 205 110 180 Z" fill="#fbbf24"/>
+</svg>`;
+}
+
+function buildHouseSVG() {
+  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <polygon ${fillSegAttr('roof')} points="20,90 100,20 180,90"/>
+  <rect ${fillSegAttr('wall')} x="30" y="90" width="140" height="100"/>
+  <rect ${fillSegAttr('door')} x="82" y="140" width="36" height="50" rx="4"/>
+  <rect ${fillSegAttr('win-l')} x="40" y="105" width="35" height="35" rx="4"/>
+  <rect ${fillSegAttr('win-r')} x="125" y="105" width="35" height="35" rx="4"/>
+  <rect ${fillSegAttr('chimney')} x="130" y="30" width="20" height="45" rx="3"/>
+  <line x1="40" y1="122" x2="75" y2="122" stroke="#0a1425" stroke-width="2"/>
+  <line x1="57" y1="105" x2="57" y2="140" stroke="#0a1425" stroke-width="2"/>
+  <line x1="125" y1="122" x2="160" y2="122" stroke="#0a1425" stroke-width="2"/>
+  <line x1="142" y1="105" x2="142" y2="140" stroke="#0a1425" stroke-width="2"/>
+</svg>`;
+}
+
+function buildRobotSVG() {
+  return `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+  <rect ${fillSegAttr('head')} x="60" y="10" width="80" height="70" rx="12"/>
+  <circle ${fillSegAttr('eye-l')} cx="82" cy="40" r="12"/>
+  <circle ${fillSegAttr('eye-r')} cx="118" cy="40" r="12"/>
+  <circle fill="#0a1425" cx="83" cy="40" r="6"/>
+  <circle fill="#0a1425" cx="119" cy="40" r="6"/>
+  <rect ${fillSegAttr('mouth')} x="78" y="62" width="44" height="10" rx="5"/>
+  <rect x="98" y="80" width="4" height="12" rx="2" fill="var(--border-lit)"/>
+  <rect ${fillSegAttr('body')} x="45" y="92" width="110" height="90" rx="10"/>
+  <rect ${fillSegAttr('panel')} x="72" y="108" width="56" height="40" rx="6"/>
+  <circle fill="#f87171" cx="84" cy="128" r="7"/>
+  <circle fill="#34d399" cx="100" cy="128" r="7"/>
+  <circle fill="#60a5fa" cx="116" cy="128" r="7"/>
+  <rect ${fillSegAttr('arm-l')} x="10" y="95" width="32" height="80" rx="12"/>
+  <rect ${fillSegAttr('arm-r')} x="158" y="95" width="32" height="80" rx="12"/>
+  <rect ${fillSegAttr('leg-l')} x="62" y="185" width="32" height="55" rx="10"/>
+  <rect ${fillSegAttr('leg-r')} x="106" y="185" width="32" height="55" rx="10"/>
+</svg>`;
+}
+
+function buildFishSVG() {
+  return `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+  <path ${fillSegAttr('tail')} d="M150 80 L185 50 L185 110 Z"/>
+  <ellipse ${fillSegAttr('body')} cx="90" cy="80" rx="75" ry="45"/>
+  <circle ${fillSegAttr('eye')} cx="38" cy="68" r="12"/>
+  <circle fill="#0a1425" cx="36" cy="67" r="6"/>
+  <path ${fillSegAttr('fin-top')} d="M80 38 Q95 15 120 30 Q100 38 80 38Z"/>
+  <path ${fillSegAttr('fin-bot')} d="M80 122 Q95 145 120 130 Q100 122 80 122Z"/>
+  <path fill="none" stroke="#0a1425" stroke-width="1.5" d="M70 50 Q80 80 70 110"/>
+  <path fill="none" stroke="#0a1425" stroke-width="1.5" d="M95 40 Q108 80 95 120"/>
+  <path fill="none" stroke="#0a1425" stroke-width="1.5" d="M118 45 Q130 80 118 115"/>
+</svg>`;
+}
+
+function buildSunSVG() {
+  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  ${[0,30,60,90,120,150,180,210,240,270,300,330].map(a=>{
+    const r=a*Math.PI/180, cx=100+68*Math.sin(r), cy=100-68*Math.cos(r);
+    return `<ellipse class="fill-seg" onclick="paintSeg('ray-${a}')" id="seg-ray-${a}" fill="#1e2d50" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="7" ry="18" transform="rotate(${a},${cx.toFixed(1)},${cy.toFixed(1)})" stroke="#1e2d50" stroke-width="1.5"/>`;
+  }).join('')}
+  <circle ${fillSegAttr('core')} cx="100" cy="100" r="42"/>
+  <circle ${fillSegAttr('face')} cx="100" cy="100" r="28"/>
+  <circle fill="#0a1425" cx="90" cy="95" r="5"/>
+  <circle fill="#0a1425" cx="110" cy="95" r="5"/>
+  <path fill="none" stroke="#0a1425" stroke-width="3" stroke-linecap="round" d="M88 110 Q100 120 112 110"/>
+</svg>`;
+}
+
+function buildCarSVG() {
+  return `<svg viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg">
+  <rect ${fillSegAttr('body')} x="15" y="80" width="210" height="60" rx="14"/>
+  <path ${fillSegAttr('cabin')} d="M55 80 L75 40 L165 40 L185 80 Z"/>
+  <rect ${fillSegAttr('win-f')} x="140" y="46" width="36" height="28" rx="4"/>
+  <rect ${fillSegAttr('win-r')} x="82" y="46" width="52" height="28" rx="4"/>
+  <circle ${fillSegAttr('wheel-fl')} cx="65" cy="148" r="26"/>
+  <circle ${fillSegAttr('wheel-fr')} cx="175" cy="148" r="26"/>
+  <circle fill="#0a1425" cx="65" cy="148" r="12"/>
+  <circle fill="#0a1425" cx="175" cy="148" r="12"/>
+  <rect ${fillSegAttr('light-f')} x="196" y="90" width="22" height="14" rx="5"/>
+  <rect ${fillSegAttr('light-b')} x="22" y="90" width="18" height="14" rx="5"/>
+</svg>`;
+}
+
+/* ======================================================
+   PAINT FUNCTION (global)
+====================================================== */
+window.paintSeg = (id) => {
+  const el = document.getElementById('seg-' + id);
+  if(el) el.setAttribute('fill', selectedColor);
+};
+
+window.resetCanvas = () => {
+  document.querySelectorAll('.fill-seg').forEach(el => el.setAttribute('fill','#ffffff'));
+};
+
+/* ======================================================
+   GALLERY INIT
+====================================================== */
+function buildGallery() {
+  const g = document.getElementById('image-gallery');
+  g.innerHTML = '';
+  artImages.forEach(img => {
+    const d = document.createElement('div');
+    d.className = 'gallery-thumb' + (img.id === selectedArt ? ' selected' : '');
+    d.innerHTML = `<span style="font-size:36px;">${img.emoji}</span><div class="thumb-label">${img.label.split(' ').slice(1).join(' ')}</div>`;
+    d.onclick = () => selectArt(img.id);
+    g.appendChild(d);
+  });
+}
+
+function selectArt(id) {
+  selectedArt = id;
+  const art = artImages.find(a=>a.id===id);
+  document.getElementById('artboard-title').textContent = art.label;
+  document.getElementById('artboard-wrap').innerHTML = art.artboard();
+  document.querySelectorAll('.gallery-thumb').forEach((el,i) => {
+    el.classList.toggle('selected', artImages[i].id === id);
+  });
+}
+
+/* ======================================================
+   PIANO RENDERING
+====================================================== */
+function renderSong() {
+  const song = songs[curSong];
+  document.getElementById('piano-song-title').textContent = song.title;
+  document.getElementById('piano-step-label').textContent = `Step ${Math.min(songStep+1, song.notes.length)} / ${song.notes.length}`;
+
+  const pct = (songStep / song.notes.length) * 100;
+  document.getElementById('piano-progress').style.width = pct + '%';
+
+  // Render note track
+  const track = document.getElementById('note-track');
+  track.innerHTML = '';
+  song.notes.forEach((n,i) => {
+    const b = document.createElement('div');
+    b.className = 'note-bead';
+    if(i === songStep) b.classList.add('target');
+    else if(i < songStep) b.classList.add('done');
+    b.textContent = n;
+    track.appendChild(b);
+  });
+  // Scroll to target
+  const target = track.querySelector('.target');
+  if(target) target.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+
+  // Key hint
+  document.querySelectorAll('.big-key').forEach(k => k.classList.remove('hint'));
+  const nextNote = song.notes[songStep];
+  const hintKey = document.getElementById('gkey-' + nextNote);
+  if(hintKey) hintKey.classList.add('hint');
+
+  document.getElementById('piano-step-info').textContent =
+    songStep < song.notes.length
+      ? `Press  ${nextNote}  on the physical block ↑`
+      : '🎉 All notes complete!';
+}
+
+/* ======================================================
+   NOTE EVENT HANDLER
+====================================================== */
+function onNoteReceived(note) {
+  // Update global note displays
+  document.getElementById('ui-last-note').textContent = note;
+  document.getElementById('ui-last-note').classList.remove('flash');
+  void document.getElementById('ui-last-note').offsetWidth;
+  document.getElementById('ui-last-note').classList.add('flash');
+
+  document.getElementById('piano-note-big').textContent = note;
+  document.getElementById('piano-note-big').classList.remove('flash');
+  void document.getElementById('piano-note-big').offsetWidth;
+  document.getElementById('piano-note-big').classList.add('flash');
+
+  // Flash key pressed
+  const keyEl = document.getElementById('gkey-' + note);
+  if(keyEl){ keyEl.classList.add('pressed'); setTimeout(()=>keyEl.classList.remove('pressed'),200); }
+
+  // Flash micro keys in snap bus
+  document.querySelectorAll('.m-key[data-note="'+note+'"]').forEach(k => {
+    k.classList.add('hit'); setTimeout(()=>k.classList.remove('hit'),200);
+  });
+
+  // Circuit schematic
+  const box = document.getElementById('edu-circuit-box');
+  if(box){
+    box.classList.add('sw-closed');
+    document.getElementById('switch-state-label').textContent = 'CLOSED (current flowing!)';
+    setTimeout(()=>{ box.classList.remove('sw-closed'); document.getElementById('switch-state-label').textContent = 'OPEN (no current)'; }, 500);
+  }
+
+  // Activity feed
+  addFeedItem(`🎹 Note received: ${note}`, 'var(--c-piano)');
+
+  // Song step check
+  const song = songs[curSong];
+  if(note === song.notes[songStep]) {
+    songStep++;
+    statCorrect++;
+    document.getElementById('stat-correct').textContent = statCorrect;
+    if(songStep >= song.notes.length) {
+      statSongs++;
+      document.getElementById('stat-songs').textContent = statSongs;
+      document.getElementById('song-complete-banner').classList.add('show');
+      addFeedItem('🎉 Song complete!', 'var(--c-rgb)');
+      setTimeout(()=>{
+        document.getElementById('song-complete-banner').classList.remove('show');
+        songStep = 0;
+        renderSong();
+      }, 3000);
+    } else {
+      renderSong();
+    }
+  }
+}
+
+/* ======================================================
+   ACTIVITY FEED
+====================================================== */
+function addFeedItem(msg, dotColor = 'var(--c-wifi)') {
+  const list = document.getElementById('feed-list');
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const item = document.createElement('div');
+  item.className = 'feed-item';
+  item.innerHTML = `<div class="feed-dot" style="background:${dotColor}"></div><div style="flex:1">${msg}</div><div class="feed-time">${time}</div>`;
+  list.insertBefore(item, list.firstChild);
+  // Trim to 8 items
+  while(list.children.length > 8) list.removeChild(list.lastChild);
+}
+
+/* ======================================================
+   NODE STATE HELPER
+====================================================== */
+function setNode(id, online) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const badge = el.querySelector('.node-badge');
+
+  if(online) {
+    el.classList.add('alive');
+    if(badge) badge.textContent = 'ACTIVE';
+  } else {
+    if(id !== 'vis-power') {
+      el.classList.remove('alive');
+      if(badge) badge.textContent = 'ABSENT';
+    }
+  }
+}
+
+/* ======================================================
+   RGB UI UPDATE
+====================================================== */
+function updateRGB(r, g, b) {
+  document.getElementById('cc-r').value = r;
+  document.getElementById('cc-g').value = g;
+  document.getElementById('cc-b').value = b;
+  document.getElementById('cc-rv').textContent = r;
+  document.getElementById('cc-gv').textContent = g;
+  document.getElementById('cc-bv').textContent = b;
+
+  const hex = '#' + [r,g,b].map(v=>v.toString(16).padStart(2,'0').toUpperCase()).join('');
+  selectedColor = hex;
+
+  document.getElementById('cc-swatch').style.background = `rgb(${r},${g},${b})`;
+  document.getElementById('cc-swatch').style.boxShadow = `0 0 30px rgba(${r},${g},${b},0.4)`;
+  document.getElementById('cc-hex').textContent = hex;
+  document.getElementById('cc-rgb-label').textContent = `R:${r}  G:${g}  B:${b}`;
+
+  // Home
+  document.getElementById('ui-swatch').style.background = `rgb(${r},${g},${b})`;
+  document.getElementById('ui-swatch').style.boxShadow = `0 0 20px rgba(${r},${g},${b},0.4)`;
+  document.getElementById('ui-hex-home').textContent = hex;
+  document.getElementById('ui-rgb-label').textContent = `R:${r} G:${g} B:${b}`;
+
+  // Lens orbs
+  const lr=document.getElementById('lens-r'), lg=document.getElementById('lens-g'), lb=document.getElementById('lens-b');
+  if(lr){lr.style.background=`rgb(${r},0,0)`;lr.style.boxShadow=`0 0 14px rgb(${r},0,0)`;}
+  if(lg){lg.style.background=`rgb(0,${g},0)`;lg.style.boxShadow=`0 0 14px rgb(0,${g},0)`;}
+  if(lb){lb.style.background=`rgb(0,0,${b})`;lb.style.boxShadow=`0 0 14px rgb(0,0,${b})`;}
+
+  document.getElementById('readout-r').textContent = `R: ${r}`;
+  document.getElementById('readout-g').textContent = `G: ${g}`;
+  document.getElementById('readout-b').textContent = `B: ${b}`;
+}
+
+/* ======================================================
+   FIREBASE LISTENER
+====================================================== */
+onValue(ref(db,'ElectroBlocks'), (snapshot) => {
+  const data = snapshot.val();
+  if(!data) return;
+
+  let nodeCount = 1; // power always counts
+  let cloudActive = false;
+   
+  // --- Piano check ---
+  if(data.piano && data.piano.B1_Status) {
+    cloudActive = true;
+    document.body.classList.add('cloud-on');
+    document.getElementById('sys-dot').className = 'status-dot alive';
+    document.getElementById('sys-label').textContent = 'ONLINE';
+
+    if(data.piano.uptime) document.getElementById('ui-uptime').textContent = data.piano.uptime;
+   
+    // WiFi block
+    const wifiOn = data.piano.B1_Status?.toLowerCase() === 'online'; // Stand-in gateway parsing check
+    setNode('vis-wifi', wifiOn); if(wifiOn) nodeCount++;
+
+    // Piano nodes
+    const p = data.piano;
+    const b1 = p.B1_Status?.toLowerCase()==='online';
+    const b2 = p.B2_Status?.toLowerCase()==='online';
+    const b3 = p.B3_Status?.toLowerCase()==='online';
+    setNode('vis-b1', b1); if(b1) nodeCount++;
+    setNode('vis-b2', b2); if(b2) nodeCount++;
+    setNode('vis-b3', b3); if(b3) nodeCount++;
+
+    if(data.piano.lastNote && data.piano.lastPressedAt !== lastTimestamp) {
+      lastTimestamp = data.piano.lastPressedAt;
+      onNoteReceived(data.piano.lastNote);
+    }
+  } else {
+    document.body.classList.remove('cloud-on');
+    document.getElementById('sys-dot').className = 'status-dot';
+    document.getElementById('sys-label').textContent = 'LOCAL MODE';
+    setNode('vis-wifi', false);
+    setNode('vis-b1', false);
+    setNode('vis-b2', false);
+    setNode('vis-b3', false);
+    addFeedItem('WiFi block disconnected', 'var(--c-danger)');
+  }
+
+  // --- INA219 (power) ---
+  if(data.ina219) {
+    const pct = Math.round(parseFloat(data.ina219.batteryPercentage)||0);
+    const remainingmAh = 1200 * (pct / 100);
+    const batteryLife = remainingmAh / 300;
+    document.getElementById('ui-bat-fill').style.width = Math.min(100,Math.max(0,pct))+'%';
+    document.getElementById('ui-bat-pct').textContent = pct+'%';
+    document.getElementById('batteryLife').innerHTML = batteryLife.toFixed(1)+' <span class="metric-unit">Hours</span>';
+  }
+
+  // --- RGB ---
+  if(data.rgb) {
+    const rgb = data.rgb;
+    const ron=rgb.R_Status?.toLowerCase()==='online';
+    const gon=rgb.G_Status?.toLowerCase()==='online';
+    const bon=rgb.B_Status?.toLowerCase()==='online';
+    setNode('vis-r',ron); if(ron) nodeCount++;
+    setNode('vis-g',gon); if(gon) nodeCount++;
+    setNode('vis-b',bon); if(bon) nodeCount++;
+    const r=parseInt(rgb.R_Value??0), g=parseInt(rgb.G_Value??0), b=parseInt(rgb.B_Value??0);
+    updateRGB(r,g,b);
+    if(ron||gon||bon) addFeedItem(`🎨 RGB updated → rgb(${r},${g},${b})`, 'var(--c-rgb)');
+  } else {
+    setNode('vis-r',false);
+    setNode('vis-g',false);
+    setNode('vis-b',false);
+  }
+
+  document.getElementById('ui-active').innerHTML = `${nodeCount} <span class="metric-unit" style="font-size:14px">/ 8</span>`;
+
+  if(cloudActive) {
+    document.getElementById('ui-rssi').innerHTML = '67 <span class="metric-unit">dBm</span>';
+    document.getElementById('ui-latency').innerHTML = '67 <span class="metric-unit">ms</span>';
+    document.getElementById('ui-pkts').innerHTML = '67 <span class="metric-unit">p/s</span>';
+  }
+
+}, (err)=>{ console.error('Firebase error:',err); });
+
+/* ======================================================
+   WINDOW HANDLERS
+====================================================== */
+window.goPage = (id, btn) => {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+};
+
+window.showInfo = (id, btn) => {
+  document.querySelectorAll('.info-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.info-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('info-'+id).classList.add('active');
+  btn.classList.add('active');
+};
+
+window.loadSong = (key, btn) => {
+  if(btn) { document.querySelectorAll('.song-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+  curSong = key; songStep = 0;
+  document.getElementById('song-complete-banner').classList.remove('show');
+  renderSong();
+};
+
+/* ======================================================
+   INIT
+====================================================== */
+buildGallery();
+selectArt('rocket');
+renderSong();
+setNode('vis-power', true); // power always on
+setNode('vis-wifi', true) ;
+setNode('vis-ron', true) ;
+setNode('vis-gon', true) ;
+setNode('vis-bon', true) ;
+addFeedItem('⚡ ElectroBlocks Studio started', 'var(--c-power)');
+
+</script>
+</body>
+</html>
