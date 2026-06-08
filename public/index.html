@@ -412,18 +412,6 @@ input[type=range] { width:100%; height:6px; border-radius:3px; }
 .cloud-gated { opacity:0.3; filter:grayscale(1); transition:all 0.5s; }
 .cloud-on .cloud-gated { opacity:1; filter:none; }
 
-/* Debug panel */
-.debug-bar {
-  position: fixed; bottom: 16px; right: 16px; z-index: 9999;
-  background: rgba(14,5,32,0.95); border: 1px solid var(--border-lit);
-  border-radius: 12px; padding: 10px 14px;
-  font-family: var(--ff-mono); font-size: 11px; color: var(--text-dim);
-  backdrop-filter: blur(12px);
-  max-width: 320px;
-}
-.debug-bar .db-title { color: var(--c-warn); font-weight: 700; margin-bottom: 4px; }
-.debug-bar .db-row { display: flex; justify-content: space-between; gap: 12px; }
-.debug-bar .db-val { color: var(--c-wifi); }
 
 @media(max-width:768px){
   .nav { padding:12px 16px; }
@@ -456,14 +444,6 @@ input[type=range] { width:100%; height:6px; border-radius:3px; }
   </div>
 </nav>
 
-<!-- Debug bar -->
-<div class="debug-bar" id="debug-bar" style="display:none;">
-  <div class="db-title">🔍 Firebase Debug</div>
-  <div class="db-row"><span>Last raw note:</span><span class="db-val" id="db-raw-note">—</span></div>
-  <div class="db-row"><span>lastPressedAt:</span><span class="db-val" id="db-ts">—</span></div>
-  <div class="db-row"><span>Trigger count:</span><span class="db-val" id="db-count">0</span></div>
-  <div class="db-row"><span>Matched step:</span><span class="db-val" id="db-match">—</span></div>
-</div>
 
 <div class="page active" id="page-home">
   <div class="sec-head">🖥️ System Telemetry</div>
@@ -787,6 +767,7 @@ input[type=range] { width:100%; height:6px; border-radius:3px; }
           <div class="tech-step step-btn"><div class="step-icon">⚡</div><div class="step-text"><h5>Power Core Block</h5><p>The boss! It pumps electricity out through its metal side-snaps to awaken other blocks.</p></div></div>
           <div class="tech-step step-gpio"><div class="step-icon">🌐</div><div class="step-text"><h5>WiFi Gateway Block</h5><p>The space radio! It grabs information from the blocks and sends it beaming up to the internet.</p></div></div>
           <div class="tech-step step-esp"><div class="step-icon">🎹</div><div class="step-text"><h5>Music Piano Blocks</h5><p>These blocks contain secret buttons. Pressing a button sends data flying along the row.</p></div></div>
+          <div class="tech-step step-esp"><div class="step-icon">🔴🟢🔵</div><div class="step-text"><h5>Colours Blocks</h5><p>These blocks have knobs that let you mix and match colors!</p></div></div>
         </div>
       </div>
 
@@ -984,14 +965,7 @@ function onNoteReceived(rawNote) {
   // Normalise: map "C4" → "4", or leave "4" as-is
   const noteNum = keyNoteMap[rawNote] || rawNote;
 
-  // Update debug bar
   triggerCount++;
-  const dbBar = document.getElementById('debug-bar');
-  if(dbBar) {
-    dbBar.style.display = 'block';
-    document.getElementById('db-raw-note').textContent  = rawNote;
-    document.getElementById('db-count').textContent     = triggerCount;
-  }
 
   // Home page last-note display
   const homeNote = document.getElementById('ui-last-note');
@@ -1041,12 +1015,11 @@ function onNoteReceived(rawNote) {
   const matchByRaw = (rawNote === reverseKeyMap[target]);
   const isMatch    = matchByNum || matchByRaw;
 
-  if(document.getElementById('db-match')) {
-    document.getElementById('db-match').textContent =
-      `num=${noteNum} tgt=${target} → ${isMatch ? '✅' : '❌'}`;
-  }
-
   if(isMatch) {
+    // Reset dedup guard so the same note can fire again on the next step
+    lastNoteValue = null;
+    lastTimestamp = null;
+
     songStep++;
     statCorrect++;
     document.getElementById('stat-correct').textContent = statCorrect;
@@ -1191,9 +1164,6 @@ onValue(ref(db,'ElectroBlocks'), (snapshot) => {
         // Firebase calls within the same tick don't double-fire
         lastTimestamp = incomingTs;
         lastNoteValue = p.lastNote;
-
-        if(document.getElementById('db-ts'))
-          document.getElementById('db-ts').textContent = String(incomingTs);
 
         onNoteReceived(p.lastNote);
       }
